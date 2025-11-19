@@ -60,11 +60,6 @@ def handle_quit():
 # rendered by the same loop - start with the button
 
 scene_manager = SceneManager()
-# NOTE:
-# could be that the content of a scene is just a function that gets called every
-# iteration and receives delta?
-
-# give scene a process function that gets called with each loop iteration
 
 
 class MainMenu:
@@ -75,13 +70,21 @@ class MainMenu:
             Button("Start Game", lambda: scene_manager.change_scene("game"), (20, 50))
         )
         self.entities.append(Button("Quit", handle_quit, (20, 120)))
-        self.entities.append(Rectangle(100, 100))
+        self.entities.append(Rectangle(100, 100, (0, 255, 255)))
+        self.entities.append(Rectangle(20, 70))
 
     # called on every loop iteration
     def process(self, delta_time):
         # hard-coding effect for now
         speed = 50
-        self.entities[2].x += delta_time * speed
+
+        # move rectangles around
+        rectangles = [
+            entity for entity in self.entities if entity.group_name == "rectangles"
+        ]
+
+        for rectangle in rectangles:
+            rectangle.x += delta_time * speed
 
 
 main_menu_instance = MainMenu()

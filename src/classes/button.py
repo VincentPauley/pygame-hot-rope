@@ -1,17 +1,20 @@
 import pygame
 
+from .entity import Entity
+
 pygame.font.init()
 font = pygame.font.Font(
     None, 30
 )  # move this into class to control font size per button
 
 
-class Button:
+class Button(Entity):
     width = 200
     height = 50
     color = (100, 200, 150)
 
     def __init__(self, text, onclick, coords=(0, 0)):
+        super().__init__("button", "ui", "buttons")
         self.x = coords[0]
         self.y = coords[1]
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
