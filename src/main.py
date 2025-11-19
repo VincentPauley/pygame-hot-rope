@@ -25,7 +25,7 @@ class SceneManager:
         self.scene_keys.append(key)
     
     def change_scene(self, scene_key):
-        self.scenes['game'].activate() # TODO: use param
+        self.scenes[scene_key].activate()
 
 # last key piece is to be able to pass in the content of a scene and have it all
 # rendered by the same loop - start with the button
@@ -37,7 +37,7 @@ scene_manager = SceneManager()
 
 # note: lambda creates a zero arg function to be called by the Button with param: "Game"
 main_menu = Scene({"screen": screen, "entities": [Button("Start Game", lambda: scene_manager.change_scene('game'))]})
-game = Scene({"screen": screen, "entities": [], "bg_color": (50, 50, 150)})
+game = Scene({"screen": screen, "entities": [Button("Main Menu", lambda: scene_manager.change_scene('main_menu'))], "bg_color": (50, 50, 150)})
 
 
 scene_manager.register_scene("main_menu", main_menu)
