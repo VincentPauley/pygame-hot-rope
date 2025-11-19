@@ -23,24 +23,22 @@ class SceneManager:
     def register_scene(self, key, scene):
         self.scenes[key] = scene
         self.scene_keys.append(key)
-
+    
+    def change_scene(self, scene_key):
+        self.scenes['game'].activate() # TODO: use param
 
 # last key piece is to be able to pass in the content of a scene and have it all
 # rendered by the same loop - start with the button
 
-
-def test_method():
-    print("test_method hit")
-    scene_manager.scenes["game"].activate()
-
-
+scene_manager = SceneManager()
 # NOTE:
 # could be that the content of a scene is just a function that gets called every
 # iteration and receives delta?
-main_menu = Scene({"screen": screen, "entities": [Button("Start Game", test_method)]})
+
+# note: lambda creates a zero arg function to be called by the Button with param: "Game"
+main_menu = Scene({"screen": screen, "entities": [Button("Start Game", lambda: scene_manager.change_scene('game'))]})
 game = Scene({"screen": screen, "entities": [], "bg_color": (50, 50, 150)})
 
-scene_manager = SceneManager()
 
 scene_manager.register_scene("main_menu", main_menu)
 scene_manager.register_scene("game", game)
