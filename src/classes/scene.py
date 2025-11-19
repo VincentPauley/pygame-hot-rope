@@ -1,6 +1,12 @@
 import pygame
 
-from .button import Button
+# needs
+
+"""
+Ok the button is being hard-coded within the init block of the function. Instead
+I want to pass a class "Entity" that for now must have draw function. Entity of
+a scene is an array and the scene is repsonsible for 
+"""
 
 
 class Scene:
@@ -17,18 +23,15 @@ class Scene:
 
         self.screen = scene_params["screen"]
 
+        if scene_params["entities"] is None:
+            raise ValueError("A scene must provide entities in order to be valid")
+
+        self.entities = scene_params["entities"]
+
         if "bg_color" in scene_params:
             self.bg_color = scene_params["bg_color"]
         else:
             self.bg_color = (0, 0, 0)
-
-        # in future the scene should register buttons dynamically
-        self.start_button = Button(
-            "Switch", self.switch_to_scene
-        )  # need an on_click method that can call another scene
-
-    def switch_to_scene(self):
-        print("Switch to scene was called")
 
     def _start_loop(self):
         while self.active:
@@ -37,14 +40,16 @@ class Scene:
                     self.active = False
                     pygame.quit()
                     return
+                # note: probably want to instead just pass events down to scene controllers rather
+                # than try to manage specific entity types here.
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    self.start_button.detect_click(event)
-                    # pass event to any buttons registered in scene...
+                    for i in self.entities:
+                        i.detect_click(event)  # < not all entities will have this
 
-            # use provided background color or default to black
             self.screen.fill(self.bg_color)
 
-            self.start_button.draw(self.screen)
+            for i in self.entities:
+                i.draw(self.screen)
 
             pygame.display.flip()
 
