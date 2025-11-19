@@ -1,5 +1,7 @@
 import pygame
 
+from .button import Button
+
 
 class Scene:
     """
@@ -11,6 +13,7 @@ class Scene:
 
     def __init__(self, screen):
         self.screen = screen
+        self.start_button = Button()
 
     def start_loop(self):
         while self.active:
@@ -21,5 +24,7 @@ class Scene:
                     return
 
             self.screen.fill((200, 190, 60))
+
+            self.start_button.draw(self.screen)
 
             pygame.display.flip()
