@@ -1,5 +1,6 @@
 import pygame
 
+from classes.scene import Scene
 from config import config
 
 pygame.init()
@@ -10,15 +11,10 @@ SCREEN_HEIGHT = config["window"]["size"]["height"]
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption(config["window"]["caption"])
 
-running = True
+main_menu = Scene(screen)
 
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+main_menu.active = True
+main_menu.start_loop()
 
-        screen.fill((255, 255, 255))
-
-        pygame.display.flip()
-
-pygame.quit()
+# TODO: the other scenes will need to know about eachother in order to call
+# eachother
