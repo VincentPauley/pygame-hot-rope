@@ -25,6 +25,8 @@ class Scene:
 
         if scene_params["entities"] is None:
             raise ValueError("A scene must provide entities in order to be valid")
+        
+        self.on_quit = scene_params["handle_quit"]
 
         self.entities = scene_params["entities"]
 
@@ -35,10 +37,14 @@ class Scene:
 
     def _start_loop(self):
         while self.active:
+            if pygame.display.get_surface() is None:
+                self.active = False
+                return
+                
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.active = False
-                    pygame.quit()
+                    self.on_quit()
                     return
                 # note: probably want to instead just pass events down to scene controllers rather
                 # than try to manage specific entity types here.
@@ -46,12 +52,25 @@ class Scene:
                     for i in self.entities:
                         i.detect_click(event)  # < not all entities will have this
 
-            self.screen.fill(self.bg_color)
 
-            for i in self.entities:
-                i.draw(self.screen)
 
-            pygame.display.flip()
+
+            # self.screen.fill(self.bg_color)
+
+            # for i in self.entities:
+            #     i.draw(self.screen)
+            # pygame.display.flip()
+            try:
+                self.screen.fill(self.bg_color)
+
+                for i in self.entities:
+                    i.draw(self.screen)
+                pygame.display.flip()
+            except pygame.error as e:
+                # common message when the window was closed: "display Surface quit"
+                # stop the loop instead of letting the exception bubble up
+                self.active = False
+                return
 
     def activate(self):
         self.active = True
