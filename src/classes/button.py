@@ -22,7 +22,6 @@ class Button:
     # TODO: hover state detection
     def detect_click(self, event):
         if self.rect.collidepoint(event.pos):
-            print("Button Has been clicked!")
             self.onclick()
 
     def draw(self, surface):
