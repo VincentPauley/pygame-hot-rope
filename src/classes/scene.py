@@ -22,6 +22,10 @@ class Scene:
 
         self.entities = scene_params["entities"]
 
+        if scene_params["process"] is None:
+            raise ValueError("A scene must provide a process function to be valid")
+        self.process_scene = scene_params["process"]
+
         if "bg_color" in scene_params:
             self.bg_color = scene_params["bg_color"]
         else:
@@ -31,7 +35,8 @@ class Scene:
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for i in self.entities:
-                    i.detect_click(event)
+                    if hasattr(i, "detect_click"):
+                        i.detect_click(event)
             if event.type == pygame.QUIT:
                 self.on_quit()
 
