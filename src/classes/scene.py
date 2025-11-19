@@ -22,9 +22,13 @@ class Scene:
         else:
             self.bg_color = (0, 0, 0)
 
+        # in future the scene should register buttons dynamically
         self.start_button = Button(
-            "Start"
+            "Switch", self.switch_to_scene
         )  # need an on_click method that can call another scene
+
+    def switch_to_scene(self):
+        print("Switch to scene was called")
 
     def _start_loop(self):
         while self.active:
@@ -33,6 +37,9 @@ class Scene:
                     self.active = False
                     pygame.quit()
                     return
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    self.start_button.detect_click(event)
+                    # pass event to any buttons registered in scene...
 
             # use provided background color or default to black
             self.screen.fill(self.bg_color)
@@ -44,7 +51,3 @@ class Scene:
     def activate(self):
         self.active = True
         self._start_loop()
-
-
-#     main_menu.active = True
-# main_menu.start_loop()

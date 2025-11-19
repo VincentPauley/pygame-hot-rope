@@ -12,12 +12,18 @@ class Button:
     x = 0
     y = 0
     color = (100, 200, 150)
-    # text = "Click Me"
 
     rect = pygame.Rect(x, y, width, height)
 
-    def __init__(self, text):
+    def __init__(self, text, onclick):
         self.text = text
+        self.onclick = onclick
+
+    # TODO: hover state detection
+    def detect_click(self, event):
+        if self.rect.collidepoint(event.pos):
+            print("Button Has been clicked!")
+            self.onclick()
 
     def draw(self, surface):
         pygame.draw.rect(surface, self.color, self.rect)
