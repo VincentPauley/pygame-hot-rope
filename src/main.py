@@ -33,13 +33,6 @@ class SceneManager:
 
     def run(self):
         while self.running:
-            # for event in pygame.event.get():
-            #     if event.type == pygame.QUIT:
-            #         print("quit detected")
-            #         self.running = False
-            #         handle_quit()
-            #         return
-            # keyboard interrupt is not working from here yet...
             try:
                 self.scenes[self.active_scene].draw()
                 self.scenes[self.active_scene].process_events()
@@ -48,6 +41,7 @@ class SceneManager:
                 self.running = False
                 handle_quit()
                 return
+            # TODO: more generic error handling from here
 
 
 def handle_quit():
@@ -64,12 +58,18 @@ scene_manager = SceneManager()
 # could be that the content of a scene is just a function that gets called every
 # iteration and receives delta?
 
+# give scene a process function that gets called with each loop iteration
+
+
 # note: lambda creates a zero arg function to be called by the Button with param: "Game"
 main_menu = Scene(
     {
         "screen": screen,
         "handle_quit": handle_quit,
-        "entities": [Button("Start Game", lambda: scene_manager.change_scene("game"))],
+        "entities": [
+            Button("Start Game", lambda: scene_manager.change_scene("game"), (20, 50)),
+            Button("Quit", handle_quit, (20, 150)),
+        ],
     }
 )
 game = Scene(
@@ -77,7 +77,9 @@ game = Scene(
         "screen": screen,
         "handle_quit": handle_quit,
         "entities": [
-            Button("Main Menu", lambda: scene_manager.change_scene("main_menu"))
+            Button(
+                "Main Menu", lambda: scene_manager.change_scene("main_menu"), (20, 50)
+            )
         ],
         "bg_color": (50, 50, 150),
     }
