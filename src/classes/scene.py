@@ -13,7 +13,9 @@ class Scene:
 
     def __init__(self, screen):
         self.screen = screen
-        self.start_button = Button()
+        self.start_button = Button(
+            "Start"
+        )  # need an on_click method that can call another scene
 
     def start_loop(self):
         while self.active:

@@ -1,7 +1,9 @@
 import pygame
 
 pygame.font.init()
-font = pygame.font.Font(None, 50)
+font = pygame.font.Font(
+    None, 30
+)  # move this into class to control font size per button
 
 
 class Button:
@@ -10,12 +12,12 @@ class Button:
     x = 0
     y = 0
     color = (100, 200, 150)
-    text = "Click Me"
+    # text = "Click Me"
 
     rect = pygame.Rect(x, y, width, height)
 
-    def __init__(self):
-        pass
+    def __init__(self, text):
+        self.text = text
 
     def draw(self, surface):
         pygame.draw.rect(surface, self.color, self.rect)
