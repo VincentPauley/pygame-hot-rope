@@ -131,30 +131,9 @@ class MainMenu:
         for entity in main_menu_buttons:
             self.entities.append(entity)
 
-        # add rectangles
-        self.entities.append(
-            Rectangle(
-                RectangleParams(
-                    group_name="rectangles", width=100, height=100, color=(0, 255, 255)
-                )
-            )
-        )
-        self.entities.append(
-            Rectangle(RectangleParams(group_name="rectangles", width=20, height=70))
-        )
-
     # called on every loop iteration
     def process(self, delta_time):
-        # hard-coding effect for now
-        speed = 50
-
-        # move rectangles around
-        rectangles = [
-            entity for entity in self.entities if entity.group_name == "rectangles"
-        ]
-
-        for rectangle in rectangles:
-            rectangle.rect.x += delta_time * speed
+        pass
 
 
 main_menu_instance = MainMenu()
@@ -165,6 +144,7 @@ class GameScene:
 
     fire_ball_dimensions = (50, 50)
 
+    # TODO: change these int
     def create_fireballs(self):
         ball_count = 10
 
@@ -192,12 +172,9 @@ class GameScene:
                 height=self.fire_ball_dimensions[1],
                 coordinates=(55, 10),
                 color=COLOR_PRIMARY_BLUE,
-                velocity=(1.0, 0.5),
+                velocity=(64.0, 64.0),
             )
         )
-
-        print("first_moveable left-edge: ", first_moveable.get_edge("bottom"))
-        print("check velo: ", first_moveable.velocity)
 
         self.entities.append(first_moveable)
 
@@ -227,7 +204,19 @@ class GameScene:
         ]
 
         for velo_ball in velo_balls:
-            velo_ball.update_pos()
+            # reverse velo when a ball is hit
+            if (
+                velo_ball.get_edge("right") > SCREEN_WIDTH
+                or velo_ball.get_edge("left") < 0
+            ):
+                velo_ball.reverse_x_velo()
+            if (
+                velo_ball.get_edge("bottom") > SCREEN_HEIGHT
+                or velo_ball.get_edge("top") < 0
+            ):
+                velo_ball.reverse_y_velo()
+
+            velo_ball.update_pos(delta_time)
 
 
 game_scene_instance = GameScene()
