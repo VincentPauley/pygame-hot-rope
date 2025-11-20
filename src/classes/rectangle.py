@@ -7,8 +7,7 @@ from .entity import Entity, EntityParams
 
 
 class RectangleParams(BaseModel):
-    # this really doesn't need to specify entity params as long as it mandates EntitParams in the definition
-    entity_params: Optional[EntityParams] = EntityParams(entity_type="rectangle")
+    group_name: Optional[str] = None
     width: int
     height: int
 
@@ -21,7 +20,14 @@ class Rectangle(Entity):
     ):
         # TODO: id should be unique and auto generated if not provided (probably within entity class)
         # print("entityDetails:", entityDetails)
-        super().__init__(rectangle_params.entity_params)
+        super().__init__(
+            EntityParams(
+                # NOTE: entity type is hard-coded here on purpose so that all Rectangle instances have the same type
+                # in the future this could be overwritten by a super-ceding class if desired.
+                group_name=rectangle_params.group_name,
+                entity_type="rectangle",
+            )
+        )
         self.width = rectangle_params.width
         self.height = rectangle_params.height
         self.x = 200

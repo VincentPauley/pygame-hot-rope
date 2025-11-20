@@ -132,11 +132,13 @@ class MainMenu:
         # add rectangles
         self.entities.append(
             Rectangle(
-                RectangleParams(width=100, height=100),
+                RectangleParams(group_name="rectangles", width=100, height=100),
                 (0, 255, 255),
             )
         )
-        self.entities.append(Rectangle(RectangleParams(width=20, height=70)))
+        self.entities.append(
+            Rectangle(RectangleParams(group_name="rectangles", width=20, height=70))
+        )
 
     # called on every loop iteration
     def process(self, delta_time):
@@ -162,14 +164,21 @@ class GameScene:
         self.entities.append(
             Rectangle(
                 RectangleParams(
-                    entity_params={
-                        "entity_type": "rectangle",
-                        "group_name": "fireball",
-                    },
+                    group_name="fireballs",
                     width=100,
                     height=100,
                 ),
                 COLOR_PRIMARY_ORANGE,
+            )
+        )
+        self.entities.append(
+            Rectangle(
+                RectangleParams(
+                    group_name="fireballs",
+                    width=20,
+                    height=20,
+                ),
+                COLOR_PRIMARY_YELLOW,
             )
         )
         self.entities.append(
@@ -187,8 +196,12 @@ class GameScene:
         print("group_name: ", self.entities[0].group_name)
 
     def process(self, delta_time):
-        # move the hard-coded rectangle around
-        self.entities[0].x += delta_time * 100
+        fireballs = [
+            entity for entity in self.entities if entity.group_name == "fireballs"
+        ]
+
+        for fireball in fireballs:
+            fireball.x += delta_time * 100
 
 
 game_scene_instance = GameScene()
