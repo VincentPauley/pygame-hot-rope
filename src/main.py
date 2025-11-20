@@ -164,9 +164,7 @@ class GameScene:
         self.entities.append(
             Rectangle(
                 RectangleParams(
-                    group_name="fireballs",
-                    width=100,
-                    height=100,
+                    group_name="fireballs", width=100, height=100, coordinates=(230, 78)
                 ),
                 COLOR_PRIMARY_ORANGE,
             )
@@ -174,9 +172,7 @@ class GameScene:
         self.entities.append(
             Rectangle(
                 RectangleParams(
-                    group_name="fireballs",
-                    width=20,
-                    height=20,
+                    group_name="fireballs", width=20, height=20, coordinates=(0, 150)
                 ),
                 COLOR_PRIMARY_YELLOW,
             )

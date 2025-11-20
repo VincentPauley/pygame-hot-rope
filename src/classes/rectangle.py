@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 import pygame
 from pydantic import BaseModel
@@ -8,6 +8,7 @@ from .entity import Entity, EntityParams
 
 class RectangleParams(BaseModel):
     group_name: Optional[str] = None
+    coordinates: Optional[Tuple[int, int]] = (0, 0)
     width: int
     height: int
 
@@ -30,8 +31,8 @@ class Rectangle(Entity):
         )
         self.width = rectangle_params.width
         self.height = rectangle_params.height
-        self.x = 200
-        self.y = 200
+        self.x = rectangle_params.coordinates[0]
+        self.y = rectangle_params.coordinates[1]
         self.color = color
 
     def draw(self, surface):
