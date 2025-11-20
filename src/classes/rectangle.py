@@ -7,7 +7,10 @@ from .entity import Entity, EntityParams
 
 
 class RectangleParams(BaseModel):
+    # supers
     group_name: Optional[str] = None
+    entity_type: Optional[str] = "rectangle"
+    # specifics
     coordinates: Optional[Tuple[int, int]] = (0, 0)
     color: Optional[Tuple[int, int, int]] = (255, 255, 255)
     width: int
@@ -23,14 +26,17 @@ class Rectangle(Entity):
                 # NOTE: entity type is hard-coded here on purpose so that all Rectangle instances have the same type
                 # in the future this could be overwritten by a super-ceding class if desired.
                 group_name=rectangle_params.group_name,
-                entity_type="rectangle",
+                entity_type=rectangle_params.entity_type,
             )
         )
-        self.width = rectangle_params.width
-        self.height = rectangle_params.height
-        self.x = rectangle_params.coordinates[0]
-        self.y = rectangle_params.coordinates[1]
+
         self.color = rectangle_params.color
+        self.rect = pygame.Rect(
+            rectangle_params.coordinates[0],
+            rectangle_params.coordinates[1],
+            rectangle_params.width,
+            rectangle_params.height,
+        )
 
     def draw(self, surface):
-        pygame.draw.rect(surface, self.color, (self.x, self.y, self.width, self.height))
+        pygame.draw.rect(surface, self.color, self.rect)

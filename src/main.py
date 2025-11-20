@@ -1,6 +1,7 @@
 import pygame
 
 from classes.button import Button
+from classes.moveable_rectangle import MoveableRectangle
 from classes.rectangle import Rectangle, RectangleParams
 from classes.scene import Scene
 from config import config
@@ -152,7 +153,7 @@ class MainMenu:
         ]
 
         for rectangle in rectangles:
-            rectangle.x += delta_time * speed
+            rectangle.rect.x += delta_time * speed
 
 
 main_menu_instance = MainMenu()
@@ -169,11 +170,7 @@ class GameScene:
         y_increment = SCREEN_HEIGHT / ball_count
         x_increment = SCREEN_WIDTH / ball_count
 
-        print("y increment: ", y_increment)
-
         for i in range(ball_count):
-            print(f"creating fireball {i} at y: {i * y_increment}")
-
             self.entities.append(
                 Rectangle(
                     RectangleParams(
@@ -186,10 +183,21 @@ class GameScene:
                 )
             )
 
-        # even spacing
-        pass
-
     def __init__(self):
+        first_moveable = MoveableRectangle(
+            RectangleParams(
+                group_name="fireballs",
+                width=self.fire_ball_dimensions[0],
+                height=self.fire_ball_dimensions[1],
+                coordinates=(55, 10),
+                color=COLOR_PRIMARY_YELLOW,
+            )
+        )
+
+        print(
+            "first_moveable right edge: ", first_moveable.rect.right
+        )  # < this works :)
+
         self.create_fireballs()
 
         self.entities.append(
@@ -209,7 +217,7 @@ class GameScene:
 
         # forces each ball positive right
         for fireball in fireballs:
-            fireball.x += delta_time * 100
+            fireball.rect.x += delta_time * 100
 
 
 game_scene_instance = GameScene()
