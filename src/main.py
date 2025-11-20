@@ -130,8 +130,29 @@ class MainMenu:
             self.entities.append(entity)
 
         # add rectangles
-        self.entities.append(Rectangle(100, 100, (0, 255, 255)))
-        self.entities.append(Rectangle(20, 70))
+        self.entities.append(
+            Rectangle(
+                {
+                    "id": "rect_01",
+                    "entity_type": "shape",
+                    "group_name": "rectangles",
+                },
+                100,
+                100,
+                (0, 255, 255),
+            )
+        )
+        self.entities.append(
+            Rectangle(
+                {
+                    "id": "rect_02",
+                    "entity_type": "shape",
+                    "group_name": "rectangles",
+                },
+                20,
+                70,
+            )
+        )
 
     # called on every loop iteration
     def process(self, delta_time):
@@ -154,7 +175,18 @@ class GameScene:
     entities = []
 
     def __init__(self):
-        self.entities.append(Rectangle(100, 100, COLOR_PRIMARY_ORANGE))
+        self.entities.append(
+            Rectangle(
+                {
+                    "id": "rect_03",
+                    "entity_type": "shape",
+                    "group_name": "rectangles",
+                },
+                100,
+                100,
+                COLOR_PRIMARY_ORANGE,
+            )
+        )
         self.entities.append(
             Button(
                 "Main Menu",
@@ -164,6 +196,9 @@ class GameScene:
                 (300, 50),
             )
         )
+
+        print("-- game scene check --")
+        print(self.entities[0].group_name)
 
     def process(self, delta_time):
         # move the hard-coded rectangle around
