@@ -1,7 +1,7 @@
 import pygame
 
 from classes.button import Button
-from classes.moveable_rectangle import MoveableRectangle
+from classes.moveable_rectangle import MoveableRectangle, MoveableRectangleParams
 from classes.rectangle import Rectangle, RectangleParams
 from classes.scene import Scene
 from config import config
@@ -16,6 +16,7 @@ pygame.display.set_caption(config["window"]["caption"])
 
 COLOR_PRIMARY_ORANGE = (255, 118, 35)
 COLOR_PRIMARY_YELLOW = (241, 245, 72)
+COLOR_PRIMARY_BLUE = (73, 114, 238)
 
 
 # button group configuration.
@@ -185,18 +186,20 @@ class GameScene:
 
     def __init__(self):
         first_moveable = MoveableRectangle(
-            RectangleParams(
-                group_name="fireballs",
+            MoveableRectangleParams(
+                group_name="velo_ball",
                 width=self.fire_ball_dimensions[0],
                 height=self.fire_ball_dimensions[1],
                 coordinates=(55, 10),
-                color=COLOR_PRIMARY_YELLOW,
+                color=COLOR_PRIMARY_BLUE,
+                velocity=(1.0, 0.5),
             )
         )
 
-        print(
-            "first_moveable right edge: ", first_moveable.rect.right
-        )  # < this works :)
+        print("first_moveable left-edge: ", first_moveable.get_edge("bottom"))
+        print("check velo: ", first_moveable.velocity)
+
+        self.entities.append(first_moveable)
 
         self.create_fireballs()
 
@@ -218,6 +221,13 @@ class GameScene:
         # forces each ball positive right
         for fireball in fireballs:
             fireball.rect.x += delta_time * 100
+
+        velo_balls = [
+            entity for entity in self.entities if entity.group_name == "velo_ball"
+        ]
+
+        for velo_ball in velo_balls:
+            velo_ball.update_pos()
 
 
 game_scene_instance = GameScene()

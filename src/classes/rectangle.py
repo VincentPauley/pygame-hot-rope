@@ -38,5 +38,17 @@ class Rectangle(Entity):
             rectangle_params.height,
         )
 
+    def get_edge(self, edge: str) -> int:
+        if edge == "right":
+            return self.rect.right
+        elif edge == "left":
+            return self.rect.left
+        elif edge == "bottom":
+            return self.rect.bottom
+        elif edge == "top":
+            return self.rect.top
+        else:
+            raise ValueError(f"Invalid edge: {edge}")
+
     def draw(self, surface):
         pygame.draw.rect(surface, self.color, self.rect)
