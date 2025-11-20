@@ -2,7 +2,6 @@ import pygame
 
 from classes.button import Button
 from classes.moveable_rectangle import MoveableRectangle, MoveableRectangleParams
-from classes.rectangle import Rectangle, RectangleParams
 from classes.scene import Scene
 from config import config
 
@@ -117,9 +116,6 @@ class SceneManager:
             # TODO: more generic error handling from here
 
 
-# last key piece is to be able to pass in the content of a scene and have it all
-# rendered by the same loop - start with the button
-
 scene_manager = SceneManager()
 
 
@@ -144,7 +140,6 @@ class GameScene:
 
     fire_ball_dimensions = (50, 50)
 
-    # TODO: change these int
     def create_fireballs(self):
         ball_count = 10
 
@@ -153,31 +148,19 @@ class GameScene:
 
         for i in range(ball_count):
             self.entities.append(
-                Rectangle(
-                    RectangleParams(
-                        group_name="fireballs",
+                MoveableRectangle(
+                    MoveableRectangleParams(
+                        group_name="velo_ball",
                         width=self.fire_ball_dimensions[0],
                         height=self.fire_ball_dimensions[1],
                         coordinates=(i * x_increment, i * y_increment),
                         color=COLOR_PRIMARY_YELLOW,
+                        velocity=(79.0, 79.0),
                     )
                 )
             )
 
     def __init__(self):
-        first_moveable = MoveableRectangle(
-            MoveableRectangleParams(
-                group_name="velo_ball",
-                width=self.fire_ball_dimensions[0],
-                height=self.fire_ball_dimensions[1],
-                coordinates=(55, 10),
-                color=COLOR_PRIMARY_BLUE,
-                velocity=(64.0, 64.0),
-            )
-        )
-
-        self.entities.append(first_moveable)
-
         self.create_fireballs()
 
         self.entities.append(
