@@ -94,9 +94,9 @@ class SceneManager:
         self.scenes[key] = scene
         self.scene_keys.append(key)
 
-    def change_scene(self, scene_key):
-        # scene_keys = []
-        print("change scene: ", scene_key)
+    def change_scene(self, scene_key: str):
+        if self.scene_keys.index(scene_key) < 0:
+            raise ValueError(f"Scene key {scene_key} not registered: " + scene_key)
         self.active_scene = scene_key
 
     def run(self):
@@ -129,6 +129,7 @@ class MainMenu:
         for entity in main_menu_buttons:
             self.entities.append(entity)
 
+        # add rectangles
         self.entities.append(Rectangle(100, 100, (0, 255, 255)))
         self.entities.append(Rectangle(20, 70))
 
