@@ -13,7 +13,57 @@ SCREEN_HEIGHT = config["window"]["size"]["height"]
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption(config["window"]["caption"])
 
+
+# button group configuration.
+# maybe this becomes a class, but should let you pick container size along with strd opts
+def define_button_group(
+    container_dimensions=(0, 0), orientation="vertical", button_height=60, buttons=[]
+):
+    # orientation "vertical" | "horizontal"
+    # inner_margin: "int" (separate buttons buy)
+    # buttons
+
+    group_entities = []
+
+    container_width = container_dimensions[0]
+    container_height = container_dimensions[1]
+
+    inner_margin = 10
+
+    gutter_count = len(buttons) - 1
+
+    group_height = len(buttons) * button_height + gutter_count * inner_margin
+
+    container_y = (container_height - group_height) / 2
+
+    for index, button in enumerate(buttons):
+        button_y = container_y + index * (button_height + inner_margin)
+        button_x = 0  # < TODO: center to container
+        group_entities.append(
+            Button(button["text"], button["onclick"], (button_x, button_y))
+        )
+
+    return group_entities
+
+
 clock = pygame.time.Clock()
+
+
+def handle_quit():
+    print("main.py handle quit")
+    scene_manager.running = False
+    pygame.quit()
+
+
+main_menu_buttons = define_button_group(
+    (SCREEN_WIDTH, SCREEN_HEIGHT),
+    "vertical",
+    60,
+    [
+        {"text": "Start Game", "onclick": lambda: scene_manager.change_scene("game")},
+        {"text": "Quit", "onclick": handle_quit},
+    ],
+)
 
 
 class SceneManager:
@@ -50,12 +100,6 @@ class SceneManager:
             # TODO: more generic error handling from here
 
 
-def handle_quit():
-    print("main.py handle quit")
-    scene_manager.running = False
-    pygame.quit()
-
-
 # last key piece is to be able to pass in the content of a scene and have it all
 # rendered by the same loop - start with the button
 
@@ -66,10 +110,10 @@ class MainMenu:
     entities = []
 
     def __init__(self):
-        self.entities.append(
-            Button("Start Game", lambda: scene_manager.change_scene("game"), (20, 50))
-        )
-        self.entities.append(Button("Quit", handle_quit, (20, 120)))
+        # main_menu_buttons
+        for entity in main_menu_buttons:
+            self.entities.append(entity)
+
         self.entities.append(Rectangle(100, 100, (0, 255, 255)))
         self.entities.append(Rectangle(20, 70))
 
