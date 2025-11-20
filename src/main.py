@@ -1,7 +1,7 @@
 import pygame
 
 from classes.button import Button
-from classes.rectangle import Rectangle
+from classes.rectangle import Rectangle, RectangleParams
 from classes.scene import Scene
 from config import config
 
@@ -132,27 +132,11 @@ class MainMenu:
         # add rectangles
         self.entities.append(
             Rectangle(
-                {
-                    "id": "rect_01",
-                    "entity_type": "shape",
-                    "group_name": "rectangles",
-                },
-                100,
-                100,
+                RectangleParams(width=100, height=100),
                 (0, 255, 255),
             )
         )
-        self.entities.append(
-            Rectangle(
-                {
-                    "id": "rect_02",
-                    "entity_type": "shape",
-                    "group_name": "rectangles",
-                },
-                20,
-                70,
-            )
-        )
+        self.entities.append(Rectangle(RectangleParams(width=20, height=70)))
 
     # called on every loop iteration
     def process(self, delta_time):
@@ -177,13 +161,7 @@ class GameScene:
     def __init__(self):
         self.entities.append(
             Rectangle(
-                {
-                    "id": "rect_03",
-                    "entity_type": "shape",
-                    "group_name": "rectangles",
-                },
-                100,
-                100,
+                RectangleParams(width=100, height=100),
                 COLOR_PRIMARY_ORANGE,
             )
         )
