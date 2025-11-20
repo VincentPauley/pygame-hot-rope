@@ -9,16 +9,13 @@ from .entity import Entity, EntityParams
 class RectangleParams(BaseModel):
     group_name: Optional[str] = None
     coordinates: Optional[Tuple[int, int]] = (0, 0)
+    color: Optional[Tuple[int, int, int]] = (255, 255, 255)
     width: int
     height: int
 
 
 class Rectangle(Entity):
-    def __init__(
-        self,
-        rectangle_params: RectangleParams,
-        color=(255, 0, 0),
-    ):
+    def __init__(self, rectangle_params: RectangleParams):
         # TODO: id should be unique and auto generated if not provided (probably within entity class)
         # print("entityDetails:", entityDetails)
         super().__init__(
@@ -33,7 +30,7 @@ class Rectangle(Entity):
         self.height = rectangle_params.height
         self.x = rectangle_params.coordinates[0]
         self.y = rectangle_params.coordinates[1]
-        self.color = color
+        self.color = rectangle_params.color
 
     def draw(self, surface):
         pygame.draw.rect(surface, self.color, (self.x, self.y, self.width, self.height))

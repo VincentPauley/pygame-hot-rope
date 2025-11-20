@@ -132,8 +132,9 @@ class MainMenu:
         # add rectangles
         self.entities.append(
             Rectangle(
-                RectangleParams(group_name="rectangles", width=100, height=100),
-                (0, 255, 255),
+                RectangleParams(
+                    group_name="rectangles", width=100, height=100, color=(0, 255, 255)
+                )
             )
         )
         self.entities.append(
@@ -164,17 +165,23 @@ class GameScene:
         self.entities.append(
             Rectangle(
                 RectangleParams(
-                    group_name="fireballs", width=100, height=100, coordinates=(230, 78)
-                ),
-                COLOR_PRIMARY_ORANGE,
+                    group_name="fireballs",
+                    width=100,
+                    height=100,
+                    coordinates=(230, 78),
+                    color=COLOR_PRIMARY_ORANGE,
+                )
             )
         )
         self.entities.append(
             Rectangle(
                 RectangleParams(
-                    group_name="fireballs", width=20, height=20, coordinates=(0, 150)
-                ),
-                COLOR_PRIMARY_YELLOW,
+                    group_name="fireballs",
+                    width=20,
+                    height=20,
+                    coordinates=(0, 150),
+                    color=COLOR_PRIMARY_YELLOW,
+                )
             )
         )
         self.entities.append(
