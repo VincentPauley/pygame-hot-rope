@@ -1,6 +1,6 @@
 import pygame
 
-from .entity import Entity
+from .entity import Entity, EntityParams
 
 pygame.font.init()
 font = pygame.font.Font(
@@ -12,7 +12,7 @@ class Button(Entity):
     def __init__(
         self, text, onclick, color=(255, 255, 255), coords=(0, 0), dimensions=(10, 10)
     ):
-        super().__init__("button", "ui", "buttons")
+        super().__init__(EntityParams(entity_type="ui", group_name="buttons"))
         self.color = color
         self.x = coords[0]
         self.y = coords[1]

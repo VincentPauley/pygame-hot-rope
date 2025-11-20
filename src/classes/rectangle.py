@@ -1,6 +1,6 @@
 import pygame
 
-from .entity import Entity
+from .entity import Entity, EntityParams
 
 defaultEntityDetails = {
     "id": "rect_01",
@@ -14,12 +14,8 @@ class Rectangle(Entity):
         self, entityDetails=defaultEntityDetails, width=10, height=10, color=(255, 0, 0)
     ):
         # TODO: id should be unique and auto generated if not provided (probably within entity class)
-        print("entityDetails:", entityDetails)
-        super().__init__(
-            defaultEntityDetails["id"],
-            defaultEntityDetails["entity_type"],
-            defaultEntityDetails["group_name"],
-        )
+        # print("entityDetails:", entityDetails)
+        super().__init__(EntityParams(entity_type="rectangle", group_name="rectangles"))
         self.width = width
         self.height = height
         self.x = 200
