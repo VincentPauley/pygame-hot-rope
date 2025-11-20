@@ -161,29 +161,37 @@ main_menu_instance = MainMenu()
 class GameScene:
     entities = []
 
+    fire_ball_dimensions = (50, 50)
+
+    def create_fireballs(self):
+        ball_count = 10
+
+        y_increment = SCREEN_HEIGHT / ball_count
+        x_increment = SCREEN_WIDTH / ball_count
+
+        print("y increment: ", y_increment)
+
+        for i in range(ball_count):
+            print(f"creating fireball {i} at y: {i * y_increment}")
+
+            self.entities.append(
+                Rectangle(
+                    RectangleParams(
+                        group_name="fireballs",
+                        width=self.fire_ball_dimensions[0],
+                        height=self.fire_ball_dimensions[1],
+                        coordinates=(i * x_increment, i * y_increment),
+                        color=COLOR_PRIMARY_YELLOW,
+                    )
+                )
+            )
+
+        # even spacing
+        pass
+
     def __init__(self):
-        self.entities.append(
-            Rectangle(
-                RectangleParams(
-                    group_name="fireballs",
-                    width=100,
-                    height=100,
-                    coordinates=(230, 78),
-                    color=COLOR_PRIMARY_ORANGE,
-                )
-            )
-        )
-        self.entities.append(
-            Rectangle(
-                RectangleParams(
-                    group_name="fireballs",
-                    width=20,
-                    height=20,
-                    coordinates=(0, 150),
-                    color=COLOR_PRIMARY_YELLOW,
-                )
-            )
-        )
+        self.create_fireballs()
+
         self.entities.append(
             Button(
                 "Main Menu",
@@ -194,15 +202,12 @@ class GameScene:
             )
         )
 
-        print("-- game scene check --")
-        print("entity_type: ", self.entities[0].entity_type)
-        print("group_name: ", self.entities[0].group_name)
-
     def process(self, delta_time):
         fireballs = [
             entity for entity in self.entities if entity.group_name == "fireballs"
         ]
 
+        # forces each ball positive right
         for fireball in fireballs:
             fireball.x += delta_time * 100
 
