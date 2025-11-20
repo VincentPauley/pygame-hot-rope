@@ -161,7 +161,14 @@ class GameScene:
     def __init__(self):
         self.entities.append(
             Rectangle(
-                RectangleParams(width=100, height=100),
+                RectangleParams(
+                    entity_params={
+                        "entity_type": "rectangle",
+                        "group_name": "fireball",
+                    },
+                    width=100,
+                    height=100,
+                ),
                 COLOR_PRIMARY_ORANGE,
             )
         )
@@ -176,7 +183,8 @@ class GameScene:
         )
 
         print("-- game scene check --")
-        print(self.entities[0].group_name)
+        print("entity_type: ", self.entities[0].entity_type)
+        print("group_name: ", self.entities[0].group_name)
 
     def process(self, delta_time):
         # move the hard-coded rectangle around

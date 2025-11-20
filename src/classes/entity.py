@@ -1,10 +1,12 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
 class EntityParams(BaseModel):
     # id: str # TODO: leave for the time being, make optional in future
     entity_type: str
-    group_name: str
+    group_name: Optional[str] = None
 
 
 class Entity:

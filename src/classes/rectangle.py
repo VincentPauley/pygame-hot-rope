@@ -7,23 +7,14 @@ from .entity import Entity, EntityParams
 
 
 class RectangleParams(BaseModel):
-    entity_params: Optional[EntityParams] = EntityParams(
-        entity_type="rectangle", group_name="rectangles"
-    )
+    # this really doesn't need to specify entity params as long as it mandates EntitParams in the definition
+    entity_params: Optional[EntityParams] = EntityParams(entity_type="rectangle")
     width: int
     height: int
 
 
-defaultEntityDetails = {
-    "id": "rect_01",
-    "group_name": "rectangles",
-    "entity_type": "shape",
-}
-
-
 class Rectangle(Entity):
     def __init__(
-        # self, entityDetails=defaultEntityDetails, width=10, height=10, color=(255, 0, 0)
         self,
         rectangle_params: RectangleParams,
         color=(255, 0, 0),
