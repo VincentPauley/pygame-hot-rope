@@ -9,14 +9,15 @@ font = pygame.font.Font(
 
 
 class Button(Entity):
-    width = 200
-    height = 50
-    color = (100, 200, 150)
-
-    def __init__(self, text, onclick, coords=(0, 0)):
+    def __init__(
+        self, text, onclick, color=(255, 255, 255), coords=(0, 0), dimensions=(10, 10)
+    ):
         super().__init__("button", "ui", "buttons")
+        self.color = color
         self.x = coords[0]
         self.y = coords[1]
+        self.width = dimensions[0]
+        self.height = dimensions[1]
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
         self.text = text

@@ -13,11 +13,18 @@ SCREEN_HEIGHT = config["window"]["size"]["height"]
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption(config["window"]["caption"])
 
+COLOR_PRIMARY_ORANGE = (255, 118, 35)
+COLOR_PRIMARY_YELLOW = (241, 245, 72)
+
 
 # button group configuration.
 # maybe this becomes a class, but should let you pick container size along with strd opts
 def define_button_group(
-    container_dimensions=(0, 0), orientation="vertical", button_height=60, buttons=[]
+    container_dimensions=(0, 0),
+    orientation="vertical",
+    button_width=300,
+    button_height=60,
+    buttons=[],
 ):
     # orientation "vertical" | "horizontal"
     # inner_margin: "int" (separate buttons buy)
@@ -35,12 +42,19 @@ def define_button_group(
     group_height = len(buttons) * button_height + gutter_count * inner_margin
 
     container_y = (container_height - group_height) / 2
+    container_x = (container_width - button_width) / 2
 
     for index, button in enumerate(buttons):
         button_y = container_y + index * (button_height + inner_margin)
-        button_x = 0  # < TODO: center to container
+        button_x = container_x  # < TODO: center to container
         group_entities.append(
-            Button(button["text"], button["onclick"], (button_x, button_y))
+            Button(
+                button["text"],
+                button["onclick"],
+                COLOR_PRIMARY_YELLOW,
+                (button_x, button_y),
+                (button_width, button_height),
+            )
         )
 
     return group_entities
@@ -58,6 +72,7 @@ def handle_quit():
 main_menu_buttons = define_button_group(
     (SCREEN_WIDTH, SCREEN_HEIGHT),
     "vertical",
+    400,
     60,
     [
         {"text": "Start Game", "onclick": lambda: scene_manager.change_scene("game")},
@@ -147,6 +162,7 @@ main_menu = Scene(
         "handle_quit": handle_quit,
         "entities": main_menu_instance.entities,
         "process": main_menu_instance.process,
+        "bg_color": COLOR_PRIMARY_ORANGE,
     }
 )
 game = Scene(
@@ -155,7 +171,11 @@ game = Scene(
         "handle_quit": handle_quit,
         "entities": [
             Button(
-                "Main Menu", lambda: scene_manager.change_scene("main_menu"), (20, 50)
+                "Main Menu",
+                lambda: scene_manager.change_scene("main_menu"),
+                COLOR_PRIMARY_YELLOW,
+                (20, 50),
+                (300, 50),
             )
         ],
         "process": temp,
