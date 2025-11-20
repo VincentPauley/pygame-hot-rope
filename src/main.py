@@ -150,13 +150,28 @@ class MainMenu:
 main_menu_instance = MainMenu()
 
 
-def temp(delta_time):
-    pass
+class GameScene:
+    entities = []
+
+    def __init__(self):
+        self.entities.append(Rectangle(100, 100, COLOR_PRIMARY_ORANGE))
+        self.entities.append(
+            Button(
+                "Main Menu",
+                lambda: scene_manager.change_scene("main_menu"),
+                COLOR_PRIMARY_YELLOW,
+                (20, 50),
+                (300, 50),
+            )
+        )
+
+    def process(self, delta_time):
+        # move the hard-coded rectangle around
+        self.entities[0].x += delta_time * 100
 
 
-# entities should be stored in here and the provided as a reference to the scene.
+game_scene_instance = GameScene()
 
-# note: lambda creates a zero arg function to be called by the Button with param: "Game"
 main_menu = Scene(
     {
         "screen": screen,
@@ -170,16 +185,8 @@ game = Scene(
     {
         "screen": screen,
         "handle_quit": handle_quit,
-        "entities": [
-            Button(
-                "Main Menu",
-                lambda: scene_manager.change_scene("main_menu"),
-                COLOR_PRIMARY_YELLOW,
-                (20, 50),
-                (300, 50),
-            )
-        ],
-        "process": temp,
+        "entities": game_scene_instance.entities,
+        "process": game_scene_instance.process,
         "bg_color": (50, 50, 150),
     }
 )
