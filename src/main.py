@@ -12,7 +12,7 @@ pygame.init()
 SCREEN_WIDTH = config["window"]["size"]["width"]
 SCREEN_HEIGHT = config["window"]["size"]["height"]
 
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SCALED, vsync=1)
 pygame.display.set_caption(config["window"]["caption"])
 
 COLOR_PRIMARY_ORANGE = (255, 118, 35)
@@ -155,6 +155,9 @@ class GameScene:
 
             velo_speed = 80 * speed_multiplier
 
+            random_effect_1 = 1 if random.randint(1, 2) == 1 else -1
+            random_effect_2 = 1 if random.randint(1, 2) == 1 else -1
+
             self.entities.append(
                 MoveableRectangle(
                     MoveableRectangleParams(
@@ -163,7 +166,10 @@ class GameScene:
                         height=self.fire_ball_dimensions[1],
                         coordinates=(i * x_increment, i * y_increment),
                         color=COLOR_PRIMARY_YELLOW,
-                        velocity=(velo_speed, velo_speed),
+                        velocity=(
+                            velo_speed * random_effect_1,
+                            velo_speed * random_effect_2,
+                        ),
                     )
                 )
             )
