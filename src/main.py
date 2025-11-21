@@ -1,3 +1,5 @@
+import random
+
 import pygame
 
 from classes.button import Button
@@ -102,12 +104,14 @@ class SceneManager:
 
     def run(self):
         while self.running:
+            clock.tick(60)  # limit to 60 FPS
             delta_time = clock.tick(60) / 1000
 
             try:
                 self.scenes[self.active_scene].process_scene(delta_time)
                 self.scenes[self.active_scene].draw()
                 self.scenes[self.active_scene].process_events()
+
             except KeyboardInterrupt:
                 print("keyboard interrupt detected")
                 self.running = False
@@ -147,6 +151,10 @@ class GameScene:
         x_increment = SCREEN_WIDTH / ball_count
 
         for i in range(ball_count):
+            speed_multiplier = random.randint(1, 6)
+
+            velo_speed = 80 * speed_multiplier
+
             self.entities.append(
                 MoveableRectangle(
                     MoveableRectangleParams(
@@ -155,7 +163,7 @@ class GameScene:
                         height=self.fire_ball_dimensions[1],
                         coordinates=(i * x_increment, i * y_increment),
                         color=COLOR_PRIMARY_YELLOW,
-                        velocity=(79.0, 79.0),
+                        velocity=(velo_speed, velo_speed),
                     )
                 )
             )
@@ -167,7 +175,7 @@ class GameScene:
             Button(
                 "Main Menu",
                 lambda: scene_manager.change_scene("main_menu"),
-                COLOR_PRIMARY_YELLOW,
+                COLOR_PRIMARY_BLUE,
                 (20, 50),
                 (300, 50),
             )
@@ -210,7 +218,7 @@ main_menu = Scene(
         "handle_quit": handle_quit,
         "entities": main_menu_instance.entities,
         "process": main_menu_instance.process,
-        "bg_color": COLOR_PRIMARY_ORANGE,
+        "bg_color": COLOR_PRIMARY_BLUE,
     }
 )
 game = Scene(
@@ -219,7 +227,7 @@ game = Scene(
         "handle_quit": handle_quit,
         "entities": game_scene_instance.entities,
         "process": game_scene_instance.process,
-        "bg_color": (50, 50, 150),
+        "bg_color": COLOR_PRIMARY_ORANGE,
     }
 )
 
