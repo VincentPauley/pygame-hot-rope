@@ -19,6 +19,14 @@ COLOR_PRIMARY_ORANGE = (255, 118, 35)
 COLOR_PRIMARY_YELLOW = (241, 245, 72)
 COLOR_PRIMARY_BLUE = (73, 114, 238)
 
+# TODOS:
+
+# reset/restart scene management
+# timer available to ALL scenes (could be useful in )
+
+timer_event = pygame.USEREVENT + 1  # Custom event ID for our timer
+pygame.time.set_timer(timer_event, 1000)
+
 
 # button group configuration.
 # maybe this becomes a class, but should let you pick container size along with strd opts
@@ -200,6 +208,7 @@ class GameScene:
             entity for entity in self.entities if entity.group_name == "velo_ball"
         ]
 
+        # TODO: add check to only reverse if it will move the rect toward center screen
         for velo_ball in velo_balls:
             # reverse velo when a ball is hit
             if (
@@ -225,6 +234,7 @@ main_menu = Scene(
         "entities": main_menu_instance.entities,
         "process": main_menu_instance.process,
         "bg_color": COLOR_PRIMARY_BLUE,
+        "time_event": timer_event,
     }
 )
 game = Scene(
@@ -234,6 +244,7 @@ game = Scene(
         "entities": game_scene_instance.entities,
         "process": game_scene_instance.process,
         "bg_color": COLOR_PRIMARY_ORANGE,
+        "time_event": timer_event,
     }
 )
 
