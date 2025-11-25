@@ -1,4 +1,5 @@
 import random
+import sys
 
 import pygame
 
@@ -79,6 +80,7 @@ def handle_quit():
     print("main.py handle quit")
     scene_manager.running = False
     pygame.quit()
+    sys.exit()
 
 
 main_menu_buttons = define_button_group(
@@ -118,14 +120,18 @@ class SceneManager:
 
             try:
                 self.scenes[self.active_scene].process_scene(delta_time)
-                self.scenes[self.active_scene].draw()
                 self.scenes[self.active_scene].process_events()
+                self.scenes[self.active_scene].draw()
 
             except KeyboardInterrupt:
                 print("keyboard interrupt detected")
                 self.running = False
                 handle_quit()
-                return
+            except Exception as e:
+                print(f"Error in scene '{self.active_scene}': {e}")
+                self.running = False
+                handle_quit()
+                break
             # TODO: more generic error handling from here
 
 
