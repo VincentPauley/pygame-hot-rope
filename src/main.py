@@ -240,7 +240,7 @@ class GameScene:
         ]
 
         for timer in timers:
-            timer.text = self.get_seconds_elapsed()
+            timer.text = str(self.scene.seconds_elapsed)
 
 
 game_scene_instance = GameScene()
@@ -268,6 +268,12 @@ game = Scene(
 
 scene_manager.register_scene("main_menu", main_menu)
 scene_manager.register_scene("game", game)
+
+# give instance objects access to the scene itself
+game_scene_instance.scene = game
+# ^ this concept is super important, instance of a class is just an object
+# constructetd with the behaviors given it does not have access to live data
+# about the class unless explicity given like this.
 
 scene_manager.running = True
 scene_manager.run()

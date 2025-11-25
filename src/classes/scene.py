@@ -36,9 +36,6 @@ class Scene:
         if "time_event" in scene_params:
             self.time_event = scene_params["time_event"]
 
-    def get_seconds_elapsed(self):
-        return self.seconds_elapsed
-
     def process_events(self):
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -49,7 +46,6 @@ class Scene:
                 self.on_quit()
             if event.type == self.time_event:
                 self.seconds_elapsed += 1
-                print(self.seconds_elapsed)
 
     def draw(self):
         self.screen.fill(self.bg_color)
