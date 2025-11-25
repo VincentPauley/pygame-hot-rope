@@ -7,6 +7,8 @@ font = pygame.font.Font(
     None, 30
 )  # move this into class to control font size per button
 
+# TODO: should button be an extension of rectangle?
+
 
 class Button(Entity):
     def __init__(

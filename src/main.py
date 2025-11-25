@@ -5,6 +5,7 @@ import pygame
 from classes.button import Button
 from classes.moveable_rectangle import MoveableRectangle, MoveableRectangleParams
 from classes.scene import Scene
+from classes.text_rectangle import TextRectangle, TextRectangleParams
 from config import config
 
 pygame.init()
@@ -195,15 +196,22 @@ class GameScene:
             )
         )
 
+        self.entities.append(
+            TextRectangle(
+                TextRectangleParams(
+                    text="Time",
+                    group_name="timer_display",
+                    text_color=(255, 255, 255),
+                    coordinates=(SCREEN_WIDTH - 110, 10),
+                    width=100,
+                    height=50,
+                    color=(0, 0, 0),
+                )
+            )
+        )
+
     def process(self, delta_time):
-        fireballs = [
-            entity for entity in self.entities if entity.group_name == "fireballs"
-        ]
-
-        # forces each ball positive right
-        for fireball in fireballs:
-            fireball.rect.x += delta_time * 100
-
+        # TODO: can I get type saftey on these?
         velo_balls = [
             entity for entity in self.entities if entity.group_name == "velo_ball"
         ]
@@ -223,6 +231,16 @@ class GameScene:
                 velo_ball.reverse_y_velo()
 
             velo_ball.update_pos(delta_time)
+
+        # check for new value in this scene's timer and update it in timer
+        # TODO: scene class should have standard method for retrieving entities by group name
+        # and ID
+        timers = [
+            entity for entity in self.entities if entity.group_name == "timer_display"
+        ]
+
+        for timer in timers:
+            timer.text = self.get_seconds_elapsed()
 
 
 game_scene_instance = GameScene()

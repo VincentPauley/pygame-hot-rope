@@ -36,6 +36,9 @@ class Scene:
         if "time_event" in scene_params:
             self.time_event = scene_params["time_event"]
 
+    def get_seconds_elapsed(self):
+        return self.seconds_elapsed
+
     def process_events(self):
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
