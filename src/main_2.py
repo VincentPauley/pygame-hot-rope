@@ -128,10 +128,19 @@ class RebounderExperiment:
         self.screen = display_screen
         self.screen = display_screen
         self.game_state_manager = game_state_manager
+        self.main_menu_button = Button(
+            "Main Menu",
+            lambda: game_state_manager.set_state("main_menu"),
+            COLOR_PRIMARY_BLUE,
+            (10, 10),
+            (150, 50),
+        )
 
     # called on every frame
     def run(self):
         self.screen.fill("orange")
+        self.main_menu_button.check_for_click()
+        self.main_menu_button.draw(self.screen)
 
 
 class GameStateManager:
