@@ -115,7 +115,6 @@ class SceneManager:
 
     def run(self):
         while self.running:
-            clock.tick(60)  # limit to 60 FPS
             delta_time = clock.tick(60) / 1000
 
             try:
