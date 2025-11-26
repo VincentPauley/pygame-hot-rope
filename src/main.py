@@ -221,18 +221,17 @@ class GameScene:
             entity for entity in self.entities if entity.group_name == "velo_ball"
         ]
 
-        # TODO: add check to only reverse if it will move the rect toward center screen
         for velo_ball in velo_balls:
-            # reverse velo when a ball is hit
-            if (
-                velo_ball.get_edge("right") > SCREEN_WIDTH
-                or velo_ball.get_edge("left") < 0
-            ):
+            if velo_ball.get_edge("right") >= SCREEN_WIDTH and velo_ball.x_velocity > 0:
+                velo_ball.reverse_x_velo()
+            if velo_ball.get_edge("left") <= 0 and velo_ball.x_velocity < 0:
                 velo_ball.reverse_x_velo()
             if (
-                velo_ball.get_edge("bottom") > SCREEN_HEIGHT
-                or velo_ball.get_edge("top") < 0
+                velo_ball.get_edge("bottom") >= SCREEN_HEIGHT
+                and velo_ball.y_velocity > 0
             ):
+                velo_ball.reverse_y_velo()
+            if velo_ball.get_edge("top") <= 0 and velo_ball.y_velocity < 0:
                 velo_ball.reverse_y_velo()
 
             velo_ball.update_pos(delta_time)
