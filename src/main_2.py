@@ -7,6 +7,7 @@ from config import config
 
 SCREEN_WIDTH = config["window"]["size"]["width"]
 SCREEN_HEIGHT = config["window"]["size"]["height"]
+FPS = 60
 
 # custom colors
 COLOR_PRIMARY_ORANGE = (255, 118, 35)
@@ -25,6 +26,7 @@ class Game:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.clock = pygame.time.Clock()
 
         self.game_state_manager = GameStateManager("main_menu")
 
@@ -41,12 +43,15 @@ class Game:
 
     def run(self):
         while True:
+            delta_time = self.clock.tick(FPS) / 1000
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     return
 
-            self.state_map[self.game_state_manager.get_state()].run()
+            self.state_map[self.game_state_manager.get_state()].run(
+                delta_time, pygame.time.get_ticks()
+            )
 
             pygame.display.flip()
 
@@ -115,7 +120,8 @@ class MainMenu:
         )
 
     # called on every frame
-    def run(self):
+    def run(self, delta_time, ticks):
+        print("Main Menu, ", ticks)
         self.screen.fill("dodgerblue")
         for button in self.main_menu_buttons:
             button.check_for_click()
@@ -137,7 +143,8 @@ class RebounderExperiment:
         )
 
     # called on every frame
-    def run(self):
+    def run(self, delta_time, ticks):
+        print("Rebounder Experiment, ", ticks)
         self.screen.fill("orange")
         self.main_menu_button.check_for_click()
         self.main_menu_button.draw(self.screen)
