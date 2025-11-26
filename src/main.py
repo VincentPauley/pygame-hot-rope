@@ -145,7 +145,7 @@ class MainMenu:
                 {
                     "text": "Start Game",
                     "onclick": lambda: game_state_manager.set_state(
-                        "rebounder_experiment", self.game_ticks
+                        "rebounder_experiment"
                     ),
                 },
                 {"text": "Quit", "onclick": handle_quit},
@@ -217,7 +217,7 @@ class RebounderExperiment:
         self.game_state_manager = game_state_manager
         self.main_menu_button = Button(
             "Main Menu",
-            lambda: game_state_manager.set_state("main_menu", pygame.time.get_ticks()),
+            lambda: game_state_manager.set_state("main_menu"),
             COLOR_PRIMARY_BLUE,
             (10, 10),
             (150, 50),
@@ -279,16 +279,13 @@ class GameStateManager:
     task_queue = []
 
     def __init__(self, currentState):
-        # self.currentState = currentState
-        self.set_state(currentState, 0)
-        # self.current_scene_start = 0
+        self.set_state(currentState)
 
     def get_state(self):
         return self.currentState
 
-    def set_state(self, newState, ticks):
+    def set_state(self, newState):
         self.currentState = newState
-        self.current_scene_start = ticks
         self.task_queue.append({"scene_key": newState, "task": "reset"})
 
     def clear_task_queue(self):
