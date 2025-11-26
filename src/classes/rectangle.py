@@ -17,6 +17,7 @@ class RectangleParams(BaseModel):
     height: int
 
 
+# this class strategy sort of locks away a rect that is used in tandum with a surface to blit
 class Rectangle(Entity):
     def __init__(self, rectangle_params: RectangleParams):
         # TODO: id should be unique and auto generated if not provided (probably within entity class)
@@ -37,18 +38,6 @@ class Rectangle(Entity):
             rectangle_params.width,
             rectangle_params.height,
         )
-
-    def get_edge(self, edge: str) -> int:
-        if edge == "right":
-            return self.rect.right
-        elif edge == "left":
-            return self.rect.left
-        elif edge == "bottom":
-            return self.rect.bottom
-        elif edge == "top":
-            return self.rect.top
-        else:
-            raise ValueError(f"Invalid edge: {edge}")
 
     def draw(self, surface):
         pygame.draw.rect(surface, self.color, self.rect)

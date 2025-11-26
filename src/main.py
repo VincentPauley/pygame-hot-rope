@@ -222,16 +222,13 @@ class GameScene:
         ]
 
         for velo_ball in velo_balls:
-            if velo_ball.get_edge("right") >= SCREEN_WIDTH and velo_ball.x_velocity > 0:
+            if velo_ball.rect.right >= SCREEN_WIDTH and velo_ball.x_velocity > 0:
                 velo_ball.reverse_x_velo()
-            if velo_ball.get_edge("left") <= 0 and velo_ball.x_velocity < 0:
+            if velo_ball.rect.left <= 0 and velo_ball.x_velocity < 0:
                 velo_ball.reverse_x_velo()
-            if (
-                velo_ball.get_edge("bottom") >= SCREEN_HEIGHT
-                and velo_ball.y_velocity > 0
-            ):
+            if velo_ball.rect.bottom >= SCREEN_HEIGHT and velo_ball.y_velocity > 0:
                 velo_ball.reverse_y_velo()
-            if velo_ball.get_edge("top") <= 0 and velo_ball.y_velocity < 0:
+            if velo_ball.rect.top <= 0 and velo_ball.y_velocity < 0:
                 velo_ball.reverse_y_velo()
 
             velo_ball.update_pos(delta_time)
