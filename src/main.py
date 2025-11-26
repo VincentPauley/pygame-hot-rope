@@ -28,6 +28,8 @@ COLOR_PRIMARY_BLUE = (73, 114, 238)
 
 timer_event = pygame.USEREVENT + 1  # Custom event ID for our timer
 pygame.time.set_timer(timer_event, 1000)
+# I believe there is a simpler approach to this by just tracking seconds since init
+# and then storing that in scene manager etc.
 
 
 # button group configuration.
@@ -278,3 +280,25 @@ game_scene_instance.scene = game
 
 scene_manager.running = True
 scene_manager.run()
+
+# scene manager basically is the Game class...
+
+
+# Try another architecture attempt:
+
+# Game class contains the main loop
+
+# Scene Manager class controls what the current scene is and supports switching it
+
+# Individual scene classes all manage their own input, update & draw through a run()
+# method.
+
+# Main game loop in Game class will call game_managner.current_scene.run() each loop iteration
+# and that should take care of everything :)
+
+# the odd part is event handling and the clock... run() is called every tick so should
+# be able to just handle wanted events in there.  Clock can maybe be passed into Game
+# manager at the start?
+
+# I think time could be stored as a global and then then scenes can access it like a normal
+# import.
