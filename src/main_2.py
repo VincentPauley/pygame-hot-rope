@@ -23,6 +23,8 @@ def handle_quit():
 
 
 class Game:
+    active_scene_started_at = 0
+
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -41,6 +43,9 @@ class Game:
             "rebounder_experiment": self.rebounder_experiment,
         }
 
+    def update_started_at(self, ticks):
+        self.started_at = ticks
+
     def run(self):
         while True:
             delta_time = self.clock.tick(FPS) / 1000
@@ -50,7 +55,9 @@ class Game:
                     return
 
             self.state_map[self.game_state_manager.get_state()].run(
-                delta_time, pygame.time.get_ticks()
+                delta_time,
+                pygame.time.get_ticks(),
+                self.game_state_manager.current_scene_start,
             )
 
             pygame.display.flip()
@@ -99,6 +106,9 @@ def define_button_group(
 
 # TODO: move to independent scene file
 class MainMenu:
+    game_ticks = 0
+    active_ticks = 0
+
     def __init__(self, display_screen, game_state_manager):
         self.screen = display_screen
         self.game_state_manager = game_state_manager
@@ -112,7 +122,7 @@ class MainMenu:
                 {
                     "text": "Start Game",
                     "onclick": lambda: game_state_manager.set_state(
-                        "rebounder_experiment"
+                        "rebounder_experiment", self.game_ticks
                     ),
                 },
                 {"text": "Quit", "onclick": handle_quit},
@@ -120,8 +130,10 @@ class MainMenu:
         )
 
     # called on every frame
-    def run(self, delta_time, ticks):
-        print("Main Menu, ", ticks)
+    def run(self, delta_time, ticks, current_scene_start):
+        self.game_ticks = ticks
+        self.active_ticks = ticks - current_scene_start
+        print("Main Menu, active_ticks: ", self.active_ticks)
         self.screen.fill("dodgerblue")
         for button in self.main_menu_buttons:
             button.check_for_click()
@@ -130,21 +142,26 @@ class MainMenu:
 
 # TODO: move to independent scene file
 class RebounderExperiment:
+    game_ticks = 0
+    active_ticks = 0
+
     def __init__(self, display_screen, game_state_manager):
         self.screen = display_screen
         self.screen = display_screen
         self.game_state_manager = game_state_manager
         self.main_menu_button = Button(
             "Main Menu",
-            lambda: game_state_manager.set_state("main_menu"),
+            lambda: game_state_manager.set_state("main_menu", self.game_ticks),
             COLOR_PRIMARY_BLUE,
             (10, 10),
             (150, 50),
         )
 
     # called on every frame
-    def run(self, delta_time, ticks):
-        print("Rebounder Experiment, ", ticks)
+    def run(self, delta_time, ticks, current_scene_start):
+        self.game_ticks = ticks
+        self.active_ticks = ticks - current_scene_start
+        print("Rebounder Experiment, active_ticks: ", self.active_ticks)
         self.screen.fill("orange")
         self.main_menu_button.check_for_click()
         self.main_menu_button.draw(self.screen)
@@ -153,12 +170,15 @@ class RebounderExperiment:
 class GameStateManager:
     def __init__(self, currentState):
         self.currentState = currentState
+        self.current_scene_start = 0
 
     def get_state(self):
         return self.currentState
 
-    def set_state(self, newState):
+    def set_state(self, newState, ticks):
+        print("just called set state: ", ticks)
         self.currentState = newState
+        self.current_scene_start = ticks
 
 
 if __name__ == "__main__":
