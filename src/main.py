@@ -80,7 +80,6 @@ class Game:
             self.state_map[current_scene].run(
                 delta_time,
                 pygame.time.get_ticks(),
-                self.game_state_manager.current_scene_start,
             )
 
             pygame.display.flip()
@@ -131,6 +130,7 @@ def define_button_group(
 class MainMenu:
     game_ticks = 0
     active_ticks = 0
+    starting_ticks = 0
 
     def __init__(self, display_screen, game_state_manager):
         self.screen = display_screen
@@ -152,19 +152,22 @@ class MainMenu:
             ],
         )
 
-    # if game manager stores things to be executed, the scene can check for corresponding
-    # tasks and run them here.
+    def reset(self):
+        print("class MainMenu: 'reset'")
+        self.starting_ticks = pygame.time.get_ticks()
+
     def task_handler(self, task_key):
-        # this receives task queue items from game state manager now
-        print("main_menu task handler received: ", task_key)
+        if task_key == "reset":
+            self.reset()
 
         self.game_state_manager.clear_task_queue()
         # needs to clear task from game scene manager once completed
 
     # called on every frame
-    def run(self, delta_time, ticks, current_scene_start):
+    # get current_scene_start out of params and into the reset function
+    def run(self, delta_time, ticks):
         self.game_ticks = ticks
-        self.active_ticks = ticks - current_scene_start
+        self.active_ticks = ticks - self.starting_ticks
         self.screen.fill("dodgerblue")
         for button in self.main_menu_buttons:
             button.check_for_click()
@@ -236,7 +239,7 @@ class RebounderExperiment:
         self.game_state_manager.clear_task_queue()
 
     # called on every frame
-    def run(self, delta_time, ticks, current_scene_start):
+    def run(self, delta_time, ticks):
         self.active_ticks = ticks - self.starting_ticks
 
         self.screen.fill("orange")
