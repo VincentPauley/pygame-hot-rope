@@ -50,7 +50,6 @@ def define_button_group(
 
 
 class MainMenu:
-    game_ticks = 0
     active_ticks = 0
     starting_ticks = 0
 
@@ -88,9 +87,8 @@ class MainMenu:
 
     # called on every frame
     # get current_scene_start out of params and into the reset function
-    def run(self, delta_time, ticks):
-        self.game_ticks = ticks
-        self.active_ticks = ticks - self.starting_ticks
+    def run(self, delta_time):
+        self.active_ticks = pygame.time.get_ticks() - self.starting_ticks
         self.screen.fill("dodgerblue")
         for button in self.main_menu_buttons:
             button.check_for_click()

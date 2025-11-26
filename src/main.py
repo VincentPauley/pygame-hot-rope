@@ -82,10 +82,7 @@ class Game:
                 # TODO: potential here for callback that removes task from queue after completion
                 self.state_map[current_scene].task_handler(current_scene_task["task"])
 
-            self.state_map[current_scene].run(
-                delta_time,
-                pygame.time.get_ticks(),
-            )
+            self.state_map[current_scene].run(delta_time)
 
             pygame.display.flip()
 
@@ -155,8 +152,8 @@ class RebounderExperiment:
         self.game_state_manager.clear_task_queue()
 
     # called on every frame
-    def run(self, delta_time, ticks):
-        self.active_ticks = ticks - self.starting_ticks
+    def run(self, delta_time):
+        self.active_ticks = pygame.time.get_ticks() - self.starting_ticks
 
         self.screen.fill("orange")
 
