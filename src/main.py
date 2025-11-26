@@ -28,9 +28,9 @@ def handle_quit():
     sys.exit()
 
 
+# want to figure out how to pass single function calls to scenes
+# that only run one time like a close out or reset.
 class Game:
-    active_scene_started_at = 0
-
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -38,6 +38,7 @@ class Game:
 
         self.game_state_manager = GameStateManager("main_menu")
 
+        # each scene already has access to the game state manager class
         self.main_menu = MainMenu(self.screen, self.game_state_manager)
         self.rebounder_experiment = RebounderExperiment(
             self.screen, self.game_state_manager
@@ -49,9 +50,6 @@ class Game:
             "rebounder_experiment": self.rebounder_experiment,
         }
 
-    def update_started_at(self, ticks):
-        self.started_at = ticks
-
     def run(self):
         while True:
             delta_time = self.clock.tick(FPS) / 1000
@@ -59,6 +57,14 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     return
+
+            # this checks if the game_state_manager has any scene tasks first before running the scene
+
+            if len(self.game_state_manager.task_queue):
+                # print("tasks are in queue")
+                self.state_map[self.game_state_manager.get_state()].task_handler(
+                    self.game_state_manager.task_queue
+                )
 
             self.state_map[self.game_state_manager.get_state()].run(
                 delta_time,
@@ -135,6 +141,15 @@ class MainMenu:
             ],
         )
 
+    # if game manager stores things to be executed, the scene can check for corresponding
+    # tasks and run them here.
+    def task_handler(self, task_key):
+        # this receives task queue items from game state manager now
+        print("main_menu task handler received: ", task_key)
+
+        self.game_state_manager.clear_task_queue()
+        # needs to clear task from game scene manager once completed
+
     # called on every frame
     def run(self, delta_time, ticks, current_scene_start):
         self.game_ticks = ticks
@@ -197,6 +212,11 @@ class RebounderExperiment:
         self.create_fireballs()
         self.timer_rect = pygame.Rect(SCREEN_WIDTH - (100 + 10), 10, 100, 50)
 
+    def task_handler(self, task_key):
+        # this receives task queue items from game state manager now
+        print("rebounder experiment task handler received: ", task_key)
+        self.game_state_manager.clear_task_queue()
+
     # called on every frame
     def run(self, delta_time, ticks, current_scene_start):
         self.game_ticks = ticks
@@ -234,10 +254,14 @@ class RebounderExperiment:
         self.main_menu_button.draw(self.screen)
 
 
+# game state manager is not aware of anything other than the scene name
 class GameStateManager:
+    task_queue = []
+
     def __init__(self, currentState):
-        self.currentState = currentState
-        self.current_scene_start = 0
+        # self.currentState = currentState
+        self.set_state(currentState, 0)
+        # self.current_scene_start = 0
 
     def get_state(self):
         return self.currentState
@@ -245,6 +269,10 @@ class GameStateManager:
     def set_state(self, newState, ticks):
         self.currentState = newState
         self.current_scene_start = ticks
+        self.task_queue.append({"scene_key": newState, "task": "reset"})
+
+    def clear_task_queue(self):
+        self.task_queue = []
 
 
 if __name__ == "__main__":
