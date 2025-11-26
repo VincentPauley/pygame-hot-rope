@@ -1,3 +1,4 @@
+import math
 import random
 import sys
 
@@ -5,35 +6,69 @@ import pygame
 
 from classes.button import Button
 from classes.moveable_rectangle import MoveableRectangle, MoveableRectangleParams
-from classes.scene import Scene
-from classes.text_rectangle import TextRectangle, TextRectangleParams
 from config import config
-
-pygame.init()
 
 SCREEN_WIDTH = config["window"]["size"]["width"]
 SCREEN_HEIGHT = config["window"]["size"]["height"]
+FPS = 60
+FONT_NAME = "Arial"
 
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SCALED, vsync=1)
-pygame.display.set_caption(config["window"]["caption"])
-
+# custom colors
 COLOR_PRIMARY_ORANGE = (255, 118, 35)
 COLOR_PRIMARY_YELLOW = (241, 245, 72)
 COLOR_PRIMARY_BLUE = (73, 114, 238)
 
-# TODOS:
-
-# reset/restart scene management
-# timer available to ALL scenes (could be useful in )
-
-timer_event = pygame.USEREVENT + 1  # Custom event ID for our timer
-pygame.time.set_timer(timer_event, 1000)
-# I believe there is a simpler approach to this by just tracking seconds since init
-# and then storing that in scene manager etc.
+font = pygame.font.SysFont(FONT_NAME, 30)
 
 
-# button group configuration.
-# maybe this becomes a class, but should let you pick container size along with strd opts
+def handle_quit():
+    print("main_2.py handle quit")
+    # scene_manager.running = False
+    pygame.quit()
+    sys.exit()
+
+
+class Game:
+    active_scene_started_at = 0
+
+    def __init__(self):
+        pygame.init()
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.clock = pygame.time.Clock()
+
+        self.game_state_manager = GameStateManager("main_menu")
+
+        self.main_menu = MainMenu(self.screen, self.game_state_manager)
+        self.rebounder_experiment = RebounderExperiment(
+            self.screen, self.game_state_manager
+        )
+
+        # this dictionary stores every scene by it's key name
+        self.state_map = {
+            "main_menu": self.main_menu,
+            "rebounder_experiment": self.rebounder_experiment,
+        }
+
+    def update_started_at(self, ticks):
+        self.started_at = ticks
+
+    def run(self):
+        while True:
+            delta_time = self.clock.tick(FPS) / 1000
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    return
+
+            self.state_map[self.game_state_manager.get_state()].run(
+                delta_time,
+                pygame.time.get_ticks(),
+                self.game_state_manager.current_scene_start,
+            )
+
+            pygame.display.flip()
+
+
 def define_button_group(
     container_dimensions=(0, 0),
     orientation="vertical",
@@ -75,89 +110,46 @@ def define_button_group(
     return group_entities
 
 
-clock = pygame.time.Clock()
-
-
-def handle_quit():
-    print("main.py handle quit")
-    scene_manager.running = False
-    pygame.quit()
-    sys.exit()
-
-
-main_menu_buttons = define_button_group(
-    (SCREEN_WIDTH, SCREEN_HEIGHT),
-    "vertical",
-    400,
-    60,
-    [
-        {"text": "Start Game", "onclick": lambda: scene_manager.change_scene("game")},
-        {"text": "Quit", "onclick": handle_quit},
-    ],
-)
-
-
-class SceneManager:
-    scenes = {}
-    scene_keys = []
-    active_scene = "main_menu"
-    running = True
-
-    def __init__(self):
-        pass
-
-    def register_scene(self, key, scene):
-        self.scenes[key] = scene
-        self.scene_keys.append(key)
-
-    def change_scene(self, scene_key: str):
-        if self.scene_keys.index(scene_key) < 0:
-            raise ValueError(f"Scene key {scene_key} not registered: " + scene_key)
-        self.active_scene = scene_key
-
-    def run(self):
-        while self.running:
-            delta_time = clock.tick(60) / 1000
-
-            try:
-                self.scenes[self.active_scene].process_scene(delta_time)
-                self.scenes[self.active_scene].process_events()
-                self.scenes[self.active_scene].draw()
-
-            except KeyboardInterrupt:
-                print("keyboard interrupt detected")
-                self.running = False
-                handle_quit()
-            except Exception as e:
-                print(f"Error in scene '{self.active_scene}': {e}")
-                self.running = False
-                handle_quit()
-                break
-            # TODO: more generic error handling from here
-
-
-scene_manager = SceneManager()
-
-
+# TODO: move to independent scene file
 class MainMenu:
-    entities = []
+    game_ticks = 0
+    active_ticks = 0
 
-    def __init__(self):
-        # main_menu_buttons
-        for entity in main_menu_buttons:
-            self.entities.append(entity)
+    def __init__(self, display_screen, game_state_manager):
+        self.screen = display_screen
+        self.game_state_manager = game_state_manager
 
-    # called on every loop iteration
-    def process(self, delta_time):
-        pass
+        self.main_menu_buttons = define_button_group(
+            (SCREEN_WIDTH, SCREEN_HEIGHT),
+            "vertical",
+            400,
+            60,
+            [
+                {
+                    "text": "Start Game",
+                    "onclick": lambda: game_state_manager.set_state(
+                        "rebounder_experiment", self.game_ticks
+                    ),
+                },
+                {"text": "Quit", "onclick": handle_quit},
+            ],
+        )
+
+    # called on every frame
+    def run(self, delta_time, ticks, current_scene_start):
+        self.game_ticks = ticks
+        self.active_ticks = ticks - current_scene_start
+        self.screen.fill("dodgerblue")
+        for button in self.main_menu_buttons:
+            button.check_for_click()
+            button.draw(self.screen)
 
 
-main_menu_instance = MainMenu()
-
-
-class GameScene:
-    entities = []
-
+# TODO: move to independent scene file
+class RebounderExperiment:
+    game_ticks = 0
+    active_ticks = 0
+    velo_balls = []
     fire_ball_dimensions = (50, 50)
 
     def create_fireballs(self):
@@ -174,7 +166,7 @@ class GameScene:
             random_effect_1 = 1 if random.randint(1, 2) == 1 else -1
             random_effect_2 = 1 if random.randint(1, 2) == 1 else -1
 
-            self.entities.append(
+            self.velo_balls.append(
                 MoveableRectangle(
                     MoveableRectangleParams(
                         group_name="velo_ball",
@@ -190,40 +182,29 @@ class GameScene:
                 )
             )
 
-    def __init__(self):
+    def __init__(self, display_screen, game_state_manager):
+        self.screen = display_screen
+        self.screen = display_screen
+        self.game_state_manager = game_state_manager
+        self.main_menu_button = Button(
+            "Main Menu",
+            lambda: game_state_manager.set_state("main_menu", self.game_ticks),
+            COLOR_PRIMARY_BLUE,
+            (10, 10),
+            (150, 50),
+        )
+
         self.create_fireballs()
+        self.timer_rect = pygame.Rect(SCREEN_WIDTH - (100 + 10), 10, 100, 50)
 
-        self.entities.append(
-            Button(
-                "Main Menu",
-                lambda: scene_manager.change_scene("main_menu"),
-                COLOR_PRIMARY_BLUE,
-                (20, 50),
-                (300, 50),
-            )
-        )
+    # called on every frame
+    def run(self, delta_time, ticks, current_scene_start):
+        self.game_ticks = ticks
+        self.active_ticks = ticks - current_scene_start
 
-        self.entities.append(
-            TextRectangle(
-                TextRectangleParams(
-                    text="Time",
-                    group_name="timer_display",
-                    text_color=(255, 255, 255),
-                    coordinates=(SCREEN_WIDTH - 110, 10),
-                    width=100,
-                    height=50,
-                    color=(0, 0, 0),
-                )
-            )
-        )
+        self.screen.fill("orange")
 
-    def process(self, delta_time):
-        # TODO: can I get type saftey on these?
-        velo_balls = [
-            entity for entity in self.entities if entity.group_name == "velo_ball"
-        ]
-
-        for velo_ball in velo_balls:
+        for velo_ball in self.velo_balls:
             if velo_ball.rect.right >= SCREEN_WIDTH and velo_ball.x_velocity > 0:
                 velo_ball.reverse_x_velo()
             if velo_ball.rect.left <= 0 and velo_ball.x_velocity < 0:
@@ -235,70 +216,37 @@ class GameScene:
 
             velo_ball.update_pos(delta_time)
 
-        # check for new value in this scene's timer and update it in timer
-        # TODO: scene class should have standard method for retrieving entities by group name
-        # and ID
-        timers = [
-            entity for entity in self.entities if entity.group_name == "timer_display"
-        ]
+        for velo_ball in self.velo_balls:
+            velo_ball.draw(self.screen)
 
-        for timer in timers:
-            timer.text = str(self.scene.seconds_elapsed)
+        pygame.draw.rect(self.screen, "gray24", self.timer_rect)
 
+        timer_text_surface = font.render(
+            str(math.floor(self.active_ticks / 1000)), True, "White"
+        )
 
-game_scene_instance = GameScene()
+        # to move this out of run function would need to preset how the size and rect is treated.
+        timer_text_rect = timer_text_surface.get_rect(center=self.timer_rect.center)
 
-main_menu = Scene(
-    {
-        "screen": screen,
-        "handle_quit": handle_quit,
-        "entities": main_menu_instance.entities,
-        "process": main_menu_instance.process,
-        "bg_color": COLOR_PRIMARY_BLUE,
-        "time_event": timer_event,
-    }
-)
-game = Scene(
-    {
-        "screen": screen,
-        "handle_quit": handle_quit,
-        "entities": game_scene_instance.entities,
-        "process": game_scene_instance.process,
-        "bg_color": COLOR_PRIMARY_ORANGE,
-        "time_event": timer_event,
-    }
-)
+        self.screen.blit(timer_text_surface, timer_text_rect)
 
-scene_manager.register_scene("main_menu", main_menu)
-scene_manager.register_scene("game", game)
-
-# give instance objects access to the scene itself
-game_scene_instance.scene = game
-# ^ this concept is super important, instance of a class is just an object
-# constructetd with the behaviors given it does not have access to live data
-# about the class unless explicity given like this.
-
-scene_manager.running = True
-scene_manager.run()
-
-# scene manager basically is the Game class...
+        self.main_menu_button.check_for_click()
+        self.main_menu_button.draw(self.screen)
 
 
-# Try another architecture attempt:
+class GameStateManager:
+    def __init__(self, currentState):
+        self.currentState = currentState
+        self.current_scene_start = 0
 
-# Game class contains the main loop
+    def get_state(self):
+        return self.currentState
 
-# Scene Manager class controls what the current scene is and supports switching it
+    def set_state(self, newState, ticks):
+        self.currentState = newState
+        self.current_scene_start = ticks
 
-# Individual scene classes all manage their own input, update & draw through a run()
-# method.
 
-# Main game loop in Game class will call game_managner.current_scene.run() each loop iteration
-# and that should take care of everything :)
-
-# the odd part is event handling and the clock... run() is called every tick so should
-# be able to just handle wanted events in there.  Clock can maybe be passed into Game
-# manager at the start?
-
-# I think time could be stored as a global and then then scenes can access it like a normal
-# import.
+if __name__ == "__main__":
+    game = Game()
+    game.run()
