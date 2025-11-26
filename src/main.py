@@ -60,13 +60,24 @@ class Game:
 
             # this checks if the game_state_manager has any scene tasks first before running the scene
 
-            if len(self.game_state_manager.task_queue):
-                # print("tasks are in queue")
-                self.state_map[self.game_state_manager.get_state()].task_handler(
-                    self.game_state_manager.task_queue
-                )
+            current_scene = self.game_state_manager.get_state()
 
-            self.state_map[self.game_state_manager.get_state()].run(
+            current_scene_task = next(
+                (
+                    t
+                    for t in self.game_state_manager.task_queue
+                    if t["scene_key"] == current_scene
+                ),
+                None,
+            )
+            # might want to just distribute all tasks here because what if there's closeout tasks for
+            # other scenes etc?
+
+            if current_scene_task:
+                # TODO: potential here for callback that removes task from queue after completion
+                self.state_map[current_scene].task_handler(current_scene_task["task"])
+
+            self.state_map[current_scene].run(
                 delta_time,
                 pygame.time.get_ticks(),
                 self.game_state_manager.current_scene_start,
@@ -162,13 +173,13 @@ class MainMenu:
 
 # TODO: move to independent scene file
 class RebounderExperiment:
-    game_ticks = 0
     active_ticks = 0
+    starting_ticks = 0
     velo_balls = []
-    fire_ball_dimensions = (50, 50)
+    fire_ball_dimensions = (20, 20)
 
     def create_fireballs(self):
-        ball_count = 10
+        ball_count = 25
 
         y_increment = SCREEN_HEIGHT / ball_count
         x_increment = SCREEN_WIDTH / ball_count
@@ -203,7 +214,7 @@ class RebounderExperiment:
         self.game_state_manager = game_state_manager
         self.main_menu_button = Button(
             "Main Menu",
-            lambda: game_state_manager.set_state("main_menu", self.game_ticks),
+            lambda: game_state_manager.set_state("main_menu", pygame.time.get_ticks()),
             COLOR_PRIMARY_BLUE,
             (10, 10),
             (150, 50),
@@ -212,15 +223,21 @@ class RebounderExperiment:
         self.create_fireballs()
         self.timer_rect = pygame.Rect(SCREEN_WIDTH - (100 + 10), 10, 100, 50)
 
+    def reset(self):
+        print("class RebounderExperiment: 'reset'")
+        self.starting_ticks = pygame.time.get_ticks()
+
+    # can now make specific handlers per task like reset or setup to minimize what's needed
+    # inside of the run function itself :)
     def task_handler(self, task_key):
-        # this receives task queue items from game state manager now
-        print("rebounder experiment task handler received: ", task_key)
+        if task_key == "reset":
+            self.reset()
+
         self.game_state_manager.clear_task_queue()
 
     # called on every frame
     def run(self, delta_time, ticks, current_scene_start):
-        self.game_ticks = ticks
-        self.active_ticks = ticks - current_scene_start
+        self.active_ticks = ticks - self.starting_ticks
 
         self.screen.fill("orange")
 
