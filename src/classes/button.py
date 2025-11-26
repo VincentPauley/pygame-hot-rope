@@ -30,6 +30,13 @@ class Button(Entity):
         if self.rect.collidepoint(event.pos):
             self.onclick()
 
+    def check_for_click(self):
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_pressed = pygame.mouse.get_pressed()
+        if self.rect.collidepoint(mouse_pos):
+            if mouse_pressed[0]:
+                self.onclick()
+
     def draw(self, surface):
         pygame.draw.rect(surface, self.color, self.rect, border_radius=5)
         text_surface = font.render(self.text, True, (0, 0, 0))
