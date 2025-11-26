@@ -1,3 +1,4 @@
+import math
 import sys
 
 import pygame
@@ -8,11 +9,14 @@ from config import config
 SCREEN_WIDTH = config["window"]["size"]["width"]
 SCREEN_HEIGHT = config["window"]["size"]["height"]
 FPS = 60
+FONT_NAME = "Arial"
 
 # custom colors
 COLOR_PRIMARY_ORANGE = (255, 118, 35)
 COLOR_PRIMARY_YELLOW = (241, 245, 72)
 COLOR_PRIMARY_BLUE = (73, 114, 238)
+
+font = pygame.font.SysFont(FONT_NAME, 30)
 
 
 def handle_quit():
@@ -133,7 +137,6 @@ class MainMenu:
     def run(self, delta_time, ticks, current_scene_start):
         self.game_ticks = ticks
         self.active_ticks = ticks - current_scene_start
-        print("Main Menu, active_ticks: ", self.active_ticks)
         self.screen.fill("dodgerblue")
         for button in self.main_menu_buttons:
             button.check_for_click()
@@ -157,12 +160,25 @@ class RebounderExperiment:
             (150, 50),
         )
 
+        self.timer_rect = pygame.Rect(SCREEN_WIDTH - (100 + 10), 10, 100, 50)
+
     # called on every frame
     def run(self, delta_time, ticks, current_scene_start):
         self.game_ticks = ticks
         self.active_ticks = ticks - current_scene_start
-        print("Rebounder Experiment, active_ticks: ", self.active_ticks)
+
         self.screen.fill("orange")
+
+        pygame.draw.rect(self.screen, "gray24", self.timer_rect)
+
+        timer_text_surface = font.render(
+            str(math.floor(self.active_ticks / 1000)), True, "White"
+        )
+
+        time_text_rect = timer_text_surface.get_rect(center=self.timer_rect.center)
+
+        self.screen.blit(timer_text_surface, time_text_rect)
+
         self.main_menu_button.check_for_click()
         self.main_menu_button.draw(self.screen)
 
@@ -176,7 +192,6 @@ class GameStateManager:
         return self.currentState
 
     def set_state(self, newState, ticks):
-        print("just called set state: ", ticks)
         self.currentState = newState
         self.current_scene_start = ticks
 
