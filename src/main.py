@@ -2,12 +2,12 @@ import sys
 
 import pygame
 
-from config import config
+from config import game_config
 from scenes.main_menu import MainMenu
 from scenes.rebound_experiment import RebounderExperiment
 
-SCREEN_WIDTH = config["window"]["size"]["width"]
-SCREEN_HEIGHT = config["window"]["size"]["height"]
+SCREEN_WIDTH = game_config.window.size["width"]
+SCREEN_HEIGHT = game_config.window.size["height"]
 FPS = 60
 FONT_NAME = "Arial"
 
@@ -28,6 +28,7 @@ class Game:
 
     def __init__(self):
         pygame.init()
+        pygame.display.set_caption(game_config.window.caption)
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
 

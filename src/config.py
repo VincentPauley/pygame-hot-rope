@@ -1,19 +1,21 @@
-# from pydantic import BaseModel
+from pydantic import BaseModel
+from typing_extensions import TypedDict
 
 
-# class WindowCaption(BaseModel):
-#     caption: str
+class WindowSize(TypedDict):
+    width: int
+    height: int
 
-# class WindowSize(BaseModel):
-#     width: int
-#     height: int
 
-# class GameConfig(BaseModel):
-#     window: {
-#         WindowCaption,
+class GameWindow(BaseModel):
+    caption: str
+    size: WindowSize
 
-#     }
 
-config = {
-    "window": {"caption": "Hot Rope", "size": {"width": 800, "height": 600}},
-}
+class GameConfig(BaseModel):
+    window: GameWindow
+
+
+game_config = GameConfig(
+    window=GameWindow(caption="Hot Fuckin Rope", size=WindowSize(width=800, height=600))
+)

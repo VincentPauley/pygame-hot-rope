@@ -2,10 +2,10 @@ import pygame
 
 from classes.button import Button
 from colors import COLOR_PRIMARY_YELLOW
-from config import config
+from config import game_config
 
-SCREEN_WIDTH = config["window"]["size"]["width"]
-SCREEN_HEIGHT = config["window"]["size"]["height"]
+SCREEN_WIDTH = game_config.window.size["width"]
+SCREEN_HEIGHT = game_config.window.size["height"]
 
 
 def define_button_group(
