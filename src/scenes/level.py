@@ -22,8 +22,6 @@ class Level:
         self.player_color = "deepskyblue1"
         self.player = pygame.Rect(300, SCREEN_HEIGHT - 150, 50, 50)
 
-        # pygame.Rect(self.x, self.y, self.width, self.height)
-
     def reset(self):
         print("class Level: 'reset'")
         self.starting_ticks = pygame.time.get_ticks()
@@ -38,4 +36,11 @@ class Level:
         self.main_menu_button.check_for_click()
         self.screen.fill("darkseagreen4")
         self.main_menu_button.draw(self.screen)
-        pygame.draw.rect(self.screen, self.player_color, self.player)
+        # pygame.draw.rect(self.screen, self.player_color, self.player)
+
+        player_circle_center = self.player.center
+        player_circle_radius = min(self.player.width, self.player.height) // 2
+
+        pygame.draw.circle(
+            self.screen, self.player_color, player_circle_center, player_circle_radius
+        )
