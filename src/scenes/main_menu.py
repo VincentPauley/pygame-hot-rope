@@ -65,6 +65,10 @@ class MainMenu:
             [
                 {
                     "text": "Start Game",
+                    "onclick": lambda: game_state_manager.set_state("level"),
+                },
+                {
+                    "text": "Rebounder Experiment",
                     "onclick": lambda: game_state_manager.set_state(
                         "rebounder_experiment"  # TODO: these should be passed in somehow rather than hard-coded
                     ),

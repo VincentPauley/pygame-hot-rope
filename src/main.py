@@ -3,6 +3,7 @@ import sys
 import pygame
 
 from config import game_config
+from scenes.level import Level
 from scenes.main_menu import MainMenu
 from scenes.rebound_experiment import RebounderExperiment
 
@@ -39,11 +40,13 @@ class Game:
         self.rebounder_experiment = RebounderExperiment(
             self.screen, self.game_state_manager
         )
+        self.level = Level(self.screen, self.game_state_manager)
 
         # this dictionary stores every scene by it's key name
         self.state_map = {
             "main_menu": self.main_menu,
             "rebounder_experiment": self.rebounder_experiment,
+            "level": self.level,
         }
         self.running = True
 

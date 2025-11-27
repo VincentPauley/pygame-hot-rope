@@ -17,5 +17,5 @@ class GameConfig(BaseModel):
 
 
 game_config = GameConfig(
-    window=GameWindow(caption="Hot Fuckin Rope", size=WindowSize(width=800, height=600))
+    window=GameWindow(caption="Hot Rope", size=WindowSize(width=800, height=600))
 )
