@@ -2,6 +2,10 @@ import pygame
 
 from classes.button import Button
 from colors import COLOR_PRIMARY_BLUE
+from config import game_config
+
+SCREEN_WIDTH = game_config.window.size["width"]
+SCREEN_HEIGHT = game_config.window.size["height"]
 
 
 class Level:
@@ -15,6 +19,10 @@ class Level:
             (10, 10),
             (150, 50),
         )
+        self.player_color = "deepskyblue1"
+        self.player = pygame.Rect(300, SCREEN_HEIGHT - 150, 50, 50)
+
+        # pygame.Rect(self.x, self.y, self.width, self.height)
 
     def reset(self):
         print("class Level: 'reset'")
@@ -30,3 +38,4 @@ class Level:
         self.main_menu_button.check_for_click()
         self.screen.fill("darkseagreen4")
         self.main_menu_button.draw(self.screen)
+        pygame.draw.rect(self.screen, self.player_color, self.player)
