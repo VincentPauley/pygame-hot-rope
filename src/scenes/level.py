@@ -48,11 +48,12 @@ class Level:
 
         self.game_state_manager.clear_task_queue()
 
-    def receive_jump_input(self, delta_time):
+    #
+    def receive_jump_input(self):
         # note: no double jumps for now
         if not self.is_jumping:
             self.is_jumping = True
-            self.velocity = -1000 * delta_time
+            self.velocity = -20  # * delta_time # delta time should not be applied here, its only one time vs the frame
 
     # step one: detect input and change color.
     def run(self, delta_time):
@@ -67,7 +68,7 @@ class Level:
         # apply gravity to velo
         if self.is_jumping:
             self.velocity = self.velocity + self.gravity
-            self.player.y += self.velocity
+            self.player.y += self.velocity * delta_time * 60
             if self.player.y >= self.palyer_spot_y:
                 self.player.y = self.palyer_spot_y
                 self.is_jumping = False
