@@ -1,3 +1,5 @@
+import math
+
 import pygame
 
 from classes.button import Button
@@ -22,6 +24,9 @@ class Level:
 
     rope_circle_pos = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
     rope_circle_radius = 275
+
+    current_angle = 0
+    angular_velocity = 0.05
 
     def __init__(self, display_screen, game_state_manager):
         self.screen = display_screen
@@ -118,4 +123,20 @@ class Level:
 
         pygame.draw.circle(
             self.screen, current_color, player_circle_center, player_circle_radius
+        )
+
+        self.current_angle += self.angular_velocity
+        # Keep angle within 0 to 2*pi
+        self.current_angle %= 2 * math.pi
+
+        death_ball_x = self.rope_circle_pos[0] + self.rope_circle_radius * math.cos(
+            self.current_angle
+        )
+
+        death_ball_y = self.rope_circle_pos[1] + self.rope_circle_radius * math.sin(
+            self.current_angle
+        )
+
+        pygame.draw.circle(
+            self.screen, "red", (death_ball_x, death_ball_y), player_circle_radius
         )
