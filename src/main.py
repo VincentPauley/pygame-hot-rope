@@ -57,6 +57,13 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     return
+                elif event.type == pygame.KEYDOWN:
+                    if (
+                        event.key == pygame.K_SPACE
+                        and self.game_state_manager.get_state() == "level"
+                    ):
+                        self.level.receive_jump_input()
+                # don't want to iterate events more than once, instead pass spacebara click to level from here
 
             # this checks if the game_state_manager has any scene tasks first before running the scene
 
