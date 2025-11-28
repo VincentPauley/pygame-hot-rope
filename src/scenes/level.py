@@ -12,7 +12,13 @@ class Level:
     velocity = 0
     gravity = 1
     is_jumping = False
-    starting_y = SCREEN_HEIGHT - 150
+    jump_color = "royalblue1"
+
+    player_width = 50
+    player_height = 50
+
+    player_spot_x = 250
+    palyer_spot_y = SCREEN_HEIGHT - 150
 
     def __init__(self, display_screen, game_state_manager):
         self.screen = display_screen
@@ -24,8 +30,13 @@ class Level:
             (10, 10),
             (150, 50),
         )
-        self.player_color = "deepskyblue1"
-        self.player = pygame.Rect(300, self.starting_y, 50, 50)
+        self.player_color = "royalblue"
+        self.player = pygame.Rect(
+            self.player_spot_x,
+            self.palyer_spot_y,
+            self.player_width,
+            self.player_height,
+        )
 
     def reset(self):
         print("class Level: 'reset'")
@@ -37,14 +48,16 @@ class Level:
 
         self.game_state_manager.clear_task_queue()
 
-    def receive_jump_input(self):
-        self.is_jumping = True
-        self.velocity = -20
+    def receive_jump_input(self, delta_time):
+        # note: no double jumps for now
+        if not self.is_jumping:
+            self.is_jumping = True
+            self.velocity = -1000 * delta_time
 
     # step one: detect input and change color.
     def run(self, delta_time):
         self.main_menu_button.check_for_click()
-        self.screen.fill("darkseagreen4")
+        self.screen.fill("gold")
         self.main_menu_button.draw(self.screen)
         # pygame.draw.rect(self.screen, self.player_color, self.player)
 
@@ -55,13 +68,25 @@ class Level:
         if self.is_jumping:
             self.velocity = self.velocity + self.gravity
             self.player.y += self.velocity
-            if self.player.y >= self.starting_y:
-                self.player.y = self.starting_y
+            if self.player.y >= self.palyer_spot_y:
+                self.player.y = self.palyer_spot_y
                 self.is_jumping = False
                 self.velocity = 0
 
-        # self.player.y += self.velocity
+        # draw player spot
+        pygame.draw.rect(
+            self.screen,
+            "orange",
+            (
+                self.player_spot_x,
+                self.palyer_spot_y,
+                self.player_width,
+                self.player_height,
+            ),
+        )
+
+        current_color = self.jump_color if self.is_jumping else self.player_color
 
         pygame.draw.circle(
-            self.screen, self.player_color, player_circle_center, player_circle_radius
+            self.screen, current_color, player_circle_center, player_circle_radius
         )

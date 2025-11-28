@@ -62,7 +62,7 @@ class Game:
                         event.key == pygame.K_SPACE
                         and self.game_state_manager.get_state() == "level"
                     ):
-                        self.level.receive_jump_input()
+                        self.level.receive_jump_input(delta_time)
                 # don't want to iterate events more than once, instead pass spacebara click to level from here
 
             # this checks if the game_state_manager has any scene tasks first before running the scene
