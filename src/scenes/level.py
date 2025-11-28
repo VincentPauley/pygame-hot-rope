@@ -20,6 +20,9 @@ class Level:
     player_spot_x = 250
     palyer_spot_y = SCREEN_HEIGHT - 150
 
+    rope_circle_pos = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+    rope_circle_radius = 275
+
     def __init__(self, display_screen, game_state_manager):
         self.screen = display_screen
         self.game_state_manager = game_state_manager
@@ -37,6 +40,9 @@ class Level:
             self.player_width,
             self.player_height,
         )
+
+        print("SCREEN_HEIGHT: ", SCREEN_HEIGHT / 2)
+        print("SCREEN_WIDTH: ", SCREEN_WIDTH / 2)
 
     def reset(self):
         print("class Level: 'reset'")
@@ -58,7 +64,7 @@ class Level:
         shadow = pygame.Rect(
             self.player_spot_x,
             self.palyer_spot_y + (self.player_height / 2),
-            self.player_width * 1.2 * ((SCREEN_HEIGHT - self.player.y) / 150),
+            self.player_width * (SCREEN_HEIGHT - self.player.y) / 140,
             self.player_height * 0.8,
         )
 
@@ -96,6 +102,10 @@ class Level:
         #         self.player_height,
         #     ),
         # )
+
+        pygame.draw.circle(
+            self.screen, "yellow", self.rope_circle_pos, self.rope_circle_radius
+        )
 
         shadow_rect = self.calc_shadow()
 
