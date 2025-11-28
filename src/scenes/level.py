@@ -48,12 +48,23 @@ class Level:
 
         self.game_state_manager.clear_task_queue()
 
-    #
     def receive_jump_input(self):
         # note: no double jumps for now
         if not self.is_jumping:
             self.is_jumping = True
-            self.velocity = -20  # * delta_time # delta time should not be applied here, its only one time vs the frame
+            self.velocity = -20
+
+    def calc_shadow(self):
+        shadow = pygame.Rect(
+            self.player_spot_x,
+            self.palyer_spot_y + (self.player_height / 2),
+            self.player_width * 1.2 * ((SCREEN_HEIGHT - self.player.y) / 150),
+            self.player_height * 0.8,
+        )
+
+        shadow.centerx = self.player.centerx
+
+        return shadow
 
     # step one: detect input and change color.
     def run(self, delta_time):
@@ -75,16 +86,23 @@ class Level:
                 self.velocity = 0
 
         # draw player spot
-        pygame.draw.rect(
-            self.screen,
-            "orange",
-            (
-                self.player_spot_x,
-                self.palyer_spot_y,
-                self.player_width,
-                self.player_height,
-            ),
-        )
+        # pygame.draw.rect(
+        #     self.screen,
+        #     "white",
+        #     (
+        #         self.player_spot_x,
+        #         self.palyer_spot_y,
+        #         self.player_width,
+        #         self.player_height,
+        #     ),
+        # )
+
+        shadow_rect = self.calc_shadow()
+
+        # drwa shadow
+        # pygame.draw.rect(self.screen, "red", shadow_rect)
+
+        pygame.draw.ellipse(self.screen, "orange", shadow_rect)
 
         current_color = self.jump_color if self.is_jumping else self.player_color
 
