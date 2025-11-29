@@ -7,6 +7,9 @@ from classes.button import Button
 from colors import COLOR_PRIMARY_BLUE
 from config import game_config
 
+pygame.font.init()
+font = pygame.font.SysFont("Arial", 30)
+
 SCREEN_WIDTH = game_config.window.size["width"]
 SCREEN_HEIGHT = game_config.window.size["height"]
 
@@ -18,6 +21,9 @@ image_filename = "fireball.png"
 # fireball_surf = pygame.image.load("./fireball.png")
 
 image_path = os.path.join(script_dir, image_filename)
+
+
+starting_rope_angle = 25
 
 
 class Level:
@@ -36,8 +42,8 @@ class Level:
     rope_circle_pos = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
     rope_circle_radius = 275
 
-    current_angle = 0
-    angular_velocity = 0.05
+    current_angle = starting_rope_angle
+    angular_velocity = 0.11
 
     outermost_fireball_pos = rope_circle_radius - 70
 
@@ -65,9 +71,23 @@ class Level:
 
         self.fireball_rect = self.fireball_image.get_rect(center=(100, 100))
 
+        self.rope_active = False
+
+        self.start_message = font.render("Click 'Space' to Play.", True, "black")
+        self.start_message_rect = self.start_message.get_rect(
+            center=(SCREEN_WIDTH // 2, 50)
+        )
+
+        self.game_over_message = font.render("Game Over!", True, "black")
+        self.game_over_rect = self.game_over_message.get_rect(
+            center=(SCREEN_WIDTH // 2, 50)
+        )
+
     def reset(self):
         print("class Level: 'reset'")
         self.starting_ticks = pygame.time.get_ticks()
+        self.player_killed = False
+        self.current_angle = starting_rope_angle
 
     def task_handler(self, task_key):
         if task_key == "reset":
@@ -76,6 +96,7 @@ class Level:
         self.game_state_manager.clear_task_queue()
 
     def receive_jump_input(self):
+        self.rope_active = True
         # note: no double jumps for now
         if not self.is_jumping:
             self.is_jumping = True
@@ -138,9 +159,10 @@ class Level:
 
         pygame.draw.ellipse(self.screen, "orange", shadow_rect)
 
-        self.current_angle += self.angular_velocity * delta_time * 60
-        # Keep angle within 0 to 2*pi
-        self.current_angle %= 2 * math.pi
+        if self.rope_active:
+            self.current_angle += self.angular_velocity * delta_time * 60
+            # Keep angle within 0 to 2*pi
+            self.current_angle %= 2 * math.pi
 
         cos_angle = math.cos(self.current_angle)
         sin_angle = math.sin(self.current_angle)
@@ -168,14 +190,26 @@ class Level:
         pygame.draw.circle(
             self.screen, current_color, player_circle_center, player_circle_radius
         )
-        # draw collision points for fields
-        player_hit_box = pygame.Rect(0, 0, self.player.width, self.player.height)
 
+        player_hit_box = pygame.Rect(0, 0, self.player.width, self.player.height)
         player_hit_box.center = player_circle_center
 
-        # this rect is the collision point between the player and fireball
-        pygame.draw.rect(self.screen, "red", fireball_rect, 2)
-        pygame.draw.rect(self.screen, "blue", player_hit_box, 2)
+        # Draw Hit Boxes:
+        # pygame.draw.rect(self.screen, "red", fireball_rect, 2)
+        # pygame.draw.rect(self.screen, "blue", player_hit_box, 2)
 
-        if fireball_rect.colliderect(player_hit_box) and not self.is_jumping:
+        # note: play with the allowed height here for "clearing the balls"
+        if (
+            fireball_rect.colliderect(player_hit_box)
+            # and not self.is_jumping
+            and self.player.y > 350
+        ):
             self.player_killed = True
+            self.rope_active = False
+
+        if self.player_killed:
+            self.screen.blit(self.game_over_message, self.game_over_rect)
+        elif not self.rope_active:
+            self.screen.blit(self.start_message, self.start_message_rect)
+
+        # up next: "Click Space to start & Reset"
