@@ -1,4 +1,5 @@
 import math
+import os
 
 import pygame
 
@@ -8,6 +9,15 @@ from config import game_config
 
 SCREEN_WIDTH = game_config.window.size["width"]
 SCREEN_HEIGHT = game_config.window.size["height"]
+
+script_dir = os.path.dirname(__file__)
+
+image_filename = "fireball.png"
+
+
+# fireball_surf = pygame.image.load("./fireball.png")
+
+image_path = os.path.join(script_dir, image_filename)
 
 
 class Level:
@@ -46,8 +56,9 @@ class Level:
             self.player_height,
         )
 
-        print("SCREEN_HEIGHT: ", SCREEN_HEIGHT / 2)
-        print("SCREEN_WIDTH: ", SCREEN_WIDTH / 2)
+        self.fireball_image = pygame.image.load(image_path).convert_alpha()
+
+        self.fireball_rect = self.fireball_image.get_rect(center=(100, 100))
 
     def reset(self):
         print("class Level: 'reset'")
@@ -80,7 +91,7 @@ class Level:
     # step one: detect input and change color.
     def run(self, delta_time):
         self.main_menu_button.check_for_click()
-        self.screen.fill("gold")
+        self.screen.fill("navajowhite2")
         self.main_menu_button.draw(self.screen)
         # pygame.draw.rect(self.screen, self.player_color, self.player)
 
@@ -154,9 +165,6 @@ class Level:
         )
 
         pygame.draw.circle(
-            self.screen, "yellow", (death_ball_x, death_ball_y), player_circle_radius
-        )
-        pygame.draw.circle(
             self.screen,
             "yellow",
             (death_ball_2_x, death_ball_2_y),
@@ -175,8 +183,16 @@ class Level:
             player_circle_radius,
         )
 
+        ball_placement = pygame.Rect(0, 0, 50, 50)
+
+        ball_placement.center = (death_ball_x, death_ball_y)
+
+        something = self.fireball_image.get_rect(center=(death_ball_x, death_ball_y))
+
         current_color = self.jump_color if self.is_jumping else self.player_color
 
         pygame.draw.circle(
             self.screen, current_color, player_circle_center, player_circle_radius
         )
+
+        self.screen.blit(self.fireball_image, something)
