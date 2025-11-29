@@ -25,6 +25,7 @@ class Level:
     gravity = 1
     is_jumping = False
     jump_color = "royalblue1"
+    dead_color = "darkred"
 
     player_width = 50
     player_height = 50
@@ -39,6 +40,8 @@ class Level:
     angular_velocity = 0.05
 
     outermost_fireball_pos = rope_circle_radius - 70
+
+    player_killed = False
 
     def __init__(self, display_screen, game_state_manager):
         self.screen = display_screen
@@ -159,7 +162,7 @@ class Level:
         self.screen.blit(self.fireball_image, fireball_rect_3)
         self.screen.blit(self.fireball_image, fireball_rect_4)
 
-        current_color = self.jump_color if self.is_jumping else self.player_color
+        current_color = self.dead_color if self.player_killed else self.player_color
 
         # draw player to screen
         pygame.draw.circle(
@@ -173,3 +176,6 @@ class Level:
         # this rect is the collision point between the player and fireball
         pygame.draw.rect(self.screen, "red", fireball_rect, 2)
         pygame.draw.rect(self.screen, "blue", player_hit_box, 2)
+
+        if fireball_rect.colliderect(player_hit_box) and not self.is_jumping:
+            self.player_killed = True
