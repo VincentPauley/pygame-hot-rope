@@ -108,10 +108,6 @@ class Level:
         #     ),
         # )
 
-        pygame.draw.circle(
-            self.screen, "yellow", self.rope_circle_pos, self.rope_circle_radius
-        )
-
         shadow_rect = self.calc_shadow()
 
         # drwa shadow
@@ -119,24 +115,68 @@ class Level:
 
         pygame.draw.ellipse(self.screen, "orange", shadow_rect)
 
+        self.current_angle += self.angular_velocity * delta_time * 60
+        # Keep angle within 0 to 2*pi
+        self.current_angle %= 2 * math.pi
+
+        starting_outer = self.rope_circle_radius - 70
+
+        death_ball_x = self.rope_circle_pos[0] + starting_outer * math.cos(
+            self.current_angle
+        )
+
+        death_ball_y = self.rope_circle_pos[1] + starting_outer * math.sin(
+            self.current_angle
+        )
+
+        death_ball_2_x = self.rope_circle_pos[0] + (starting_outer * 0.75) * math.cos(
+            self.current_angle
+        )
+
+        death_ball_2_y = self.rope_circle_pos[1] + (starting_outer * 0.75) * math.sin(
+            self.current_angle
+        )
+
+        death_ball_3_x = self.rope_circle_pos[0] + (starting_outer * 0.5) * math.cos(
+            self.current_angle
+        )
+
+        death_ball_3_y = self.rope_circle_pos[1] + (starting_outer * 0.5) * math.sin(
+            self.current_angle
+        )
+
+        death_ball_4_x = self.rope_circle_pos[0] + (starting_outer * 0.25) * math.cos(
+            self.current_angle
+        )
+
+        death_ball_4_y = self.rope_circle_pos[1] + (starting_outer * 0.25) * math.sin(
+            self.current_angle
+        )
+
+        pygame.draw.circle(
+            self.screen, "yellow", (death_ball_x, death_ball_y), player_circle_radius
+        )
+        pygame.draw.circle(
+            self.screen,
+            "yellow",
+            (death_ball_2_x, death_ball_2_y),
+            player_circle_radius,
+        )
+        pygame.draw.circle(
+            self.screen,
+            "yellow",
+            (death_ball_3_x, death_ball_3_y),
+            player_circle_radius,
+        )
+        pygame.draw.circle(
+            self.screen,
+            "yellow",
+            (death_ball_4_x, death_ball_4_y),
+            player_circle_radius,
+        )
+
         current_color = self.jump_color if self.is_jumping else self.player_color
 
         pygame.draw.circle(
             self.screen, current_color, player_circle_center, player_circle_radius
-        )
-
-        self.current_angle += self.angular_velocity
-        # Keep angle within 0 to 2*pi
-        self.current_angle %= 2 * math.pi
-
-        death_ball_x = self.rope_circle_pos[0] + self.rope_circle_radius * math.cos(
-            self.current_angle
-        )
-
-        death_ball_y = self.rope_circle_pos[1] + self.rope_circle_radius * math.sin(
-            self.current_angle
-        )
-
-        pygame.draw.circle(
-            self.screen, "red", (death_ball_x, death_ball_y), player_circle_radius
         )
