@@ -38,6 +38,8 @@ class Level:
     current_angle = 0
     angular_velocity = 0.05
 
+    outermost_fireball_pos = rope_circle_radius - 70
+
     def __init__(self, display_screen, game_state_manager):
         self.screen = display_screen
         self.game_state_manager = game_state_manager
@@ -75,6 +77,16 @@ class Level:
         if not self.is_jumping:
             self.is_jumping = True
             self.velocity = -20
+
+    # NOTE: does this need to be done for each fireball? might be able to just
+    # do once for outer and then calc dist between those 2 points for other centers
+    def calc_fireball_pos(self, center_offset, sin_angle, cos_angle):
+        dist_from_center = self.outermost_fireball_pos * center_offset
+
+        return [
+            self.rope_circle_pos[0] + dist_from_center * sin_angle,
+            self.rope_circle_pos[1] + dist_from_center * cos_angle,
+        ]
 
     def calc_shadow(self):
         shadow = pygame.Rect(
@@ -130,69 +142,29 @@ class Level:
         # Keep angle within 0 to 2*pi
         self.current_angle %= 2 * math.pi
 
-        starting_outer = self.rope_circle_radius - 70
+        # starting_outer = self.rope_circle_radius - 70
 
-        death_ball_x = self.rope_circle_pos[0] + starting_outer * math.cos(
-            self.current_angle
-        )
+        cos_angle = math.cos(self.current_angle)
+        sin_angle = math.sin(self.current_angle)
 
-        death_ball_y = self.rope_circle_pos[1] + starting_outer * math.sin(
-            self.current_angle
-        )
+        death_ball_1 = self.calc_fireball_pos(1, cos_angle, sin_angle)
+        death_ball_2 = self.calc_fireball_pos(0.75, cos_angle, sin_angle)
+        death_ball_3 = self.calc_fireball_pos(0.5, cos_angle, sin_angle)
+        death_ball_4 = self.calc_fireball_pos(0.25, cos_angle, sin_angle)
 
-        death_ball_2_x = self.rope_circle_pos[0] + (starting_outer * 0.75) * math.cos(
-            self.current_angle
-        )
+        fireball_rect = self.fireball_image.get_rect(center=(death_ball_1))
+        fireball_rect_2 = self.fireball_image.get_rect(center=(death_ball_2))
+        fireball_rect_3 = self.fireball_image.get_rect(center=(death_ball_3))
+        fireball_rect_4 = self.fireball_image.get_rect(center=(death_ball_4))
 
-        death_ball_2_y = self.rope_circle_pos[1] + (starting_outer * 0.75) * math.sin(
-            self.current_angle
-        )
-
-        death_ball_3_x = self.rope_circle_pos[0] + (starting_outer * 0.5) * math.cos(
-            self.current_angle
-        )
-
-        death_ball_3_y = self.rope_circle_pos[1] + (starting_outer * 0.5) * math.sin(
-            self.current_angle
-        )
-
-        death_ball_4_x = self.rope_circle_pos[0] + (starting_outer * 0.25) * math.cos(
-            self.current_angle
-        )
-
-        death_ball_4_y = self.rope_circle_pos[1] + (starting_outer * 0.25) * math.sin(
-            self.current_angle
-        )
-
-        pygame.draw.circle(
-            self.screen,
-            "yellow",
-            (death_ball_2_x, death_ball_2_y),
-            player_circle_radius,
-        )
-        pygame.draw.circle(
-            self.screen,
-            "yellow",
-            (death_ball_3_x, death_ball_3_y),
-            player_circle_radius,
-        )
-        pygame.draw.circle(
-            self.screen,
-            "yellow",
-            (death_ball_4_x, death_ball_4_y),
-            player_circle_radius,
-        )
-
-        ball_placement = pygame.Rect(0, 0, 50, 50)
-
-        ball_placement.center = (death_ball_x, death_ball_y)
-
-        something = self.fireball_image.get_rect(center=(death_ball_x, death_ball_y))
+        self.screen.blit(self.fireball_image, fireball_rect)
+        self.screen.blit(self.fireball_image, fireball_rect_2)
+        self.screen.blit(self.fireball_image, fireball_rect_3)
+        self.screen.blit(self.fireball_image, fireball_rect_4)
 
         current_color = self.jump_color if self.is_jumping else self.player_color
 
+        # draw player to screen
         pygame.draw.circle(
             self.screen, current_color, player_circle_center, player_circle_radius
         )
-
-        self.screen.blit(self.fireball_image, something)
