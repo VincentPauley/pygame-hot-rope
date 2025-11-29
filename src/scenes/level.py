@@ -84,8 +84,8 @@ class Level:
         dist_from_center = self.outermost_fireball_pos * center_offset
 
         return [
-            self.rope_circle_pos[0] + dist_from_center * sin_angle,
-            self.rope_circle_pos[1] + dist_from_center * cos_angle,
+            round(self.rope_circle_pos[0] + dist_from_center * sin_angle),
+            round(self.rope_circle_pos[1] + dist_from_center * cos_angle),
         ]
 
     def calc_shadow(self):
@@ -133,16 +133,11 @@ class Level:
 
         shadow_rect = self.calc_shadow()
 
-        # drwa shadow
-        # pygame.draw.rect(self.screen, "red", shadow_rect)
-
         pygame.draw.ellipse(self.screen, "orange", shadow_rect)
 
         self.current_angle += self.angular_velocity * delta_time * 60
         # Keep angle within 0 to 2*pi
         self.current_angle %= 2 * math.pi
-
-        # starting_outer = self.rope_circle_radius - 70
 
         cos_angle = math.cos(self.current_angle)
         sin_angle = math.sin(self.current_angle)
@@ -157,6 +152,8 @@ class Level:
         fireball_rect_3 = self.fireball_image.get_rect(center=(death_ball_3))
         fireball_rect_4 = self.fireball_image.get_rect(center=(death_ball_4))
 
+        # fireball_rect
+
         self.screen.blit(self.fireball_image, fireball_rect)
         self.screen.blit(self.fireball_image, fireball_rect_2)
         self.screen.blit(self.fireball_image, fireball_rect_3)
@@ -168,3 +165,11 @@ class Level:
         pygame.draw.circle(
             self.screen, current_color, player_circle_center, player_circle_radius
         )
+        # draw collision points for fields
+        player_hit_box = pygame.Rect(0, 0, self.player.width, self.player.height)
+
+        player_hit_box.center = player_circle_center
+
+        # this rect is the collision point between the player and fireball
+        pygame.draw.rect(self.screen, "red", fireball_rect, 2)
+        pygame.draw.rect(self.screen, "blue", player_hit_box, 2)
