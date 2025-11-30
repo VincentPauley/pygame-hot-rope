@@ -1,3 +1,5 @@
+import os
+
 import pygame
 
 from classes.button import Button
@@ -8,12 +10,18 @@ SCREEN_WIDTH = game_config.window.size["width"]
 SCREEN_HEIGHT = game_config.window.size["height"]
 
 
+title_image_path = os.path.join("src", "assets", "hot-rope-title.png")
+
+print("title_image_path: ", title_image_path)
+
+
 def define_button_group(
     container_dimensions=(0, 0),
     orientation="vertical",
     button_width=300,
     button_height=60,
     buttons=[],
+    margin_top=100,
 ):
     # orientation "vertical" | "horizontal"
     # inner_margin: "int" (separate buttons buy)
@@ -34,7 +42,7 @@ def define_button_group(
     container_x = (container_width - button_width) / 2
 
     for index, button in enumerate(buttons):
-        button_y = container_y + index * (button_height + inner_margin)
+        button_y = container_y + index * (button_height + inner_margin) + margin_top
         button_x = container_x  # < TODO: center to container
         group_entities.append(
             Button(
@@ -56,6 +64,14 @@ class MainMenu:
     def __init__(self, display_screen, game_state_manager):
         self.screen = display_screen
         self.game_state_manager = game_state_manager
+
+        self.title_image = pygame.image.load(title_image_path).convert_alpha()
+
+        # self.fireball_rect = self.fireball_image.get_rect(center=(100, 100))
+
+        self.title_image_rect = self.title_image.get_rect(
+            center=(SCREEN_WIDTH // 2, 140)
+        )
 
         self.main_menu_buttons = define_button_group(
             (SCREEN_WIDTH, SCREEN_HEIGHT),
@@ -97,3 +113,5 @@ class MainMenu:
         for button in self.main_menu_buttons:
             button.check_for_click()
             button.draw(self.screen)
+
+        self.screen.blit(self.title_image, self.title_image_rect)
