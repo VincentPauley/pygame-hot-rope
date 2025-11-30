@@ -17,8 +17,7 @@ script_dir = os.path.dirname(__file__)
 
 image_filename = "fireball.png"
 
-
-# fireball_surf = pygame.image.load("./fireball.png")
+monster_image_path = os.path.join("src", "assets", "hot-rope-monster.png")
 
 image_path = os.path.join(script_dir, image_filename)
 
@@ -70,6 +69,18 @@ class Level:
         self.fireball_image = pygame.image.load(image_path).convert_alpha()
 
         self.fireball_rect = self.fireball_image.get_rect(center=(100, 100))
+
+        self.monster_image = pygame.image.load(monster_image_path).convert_alpha()
+
+        self.scaled_monster_image = pygame.transform.scale(
+            self.monster_image, (140, 200)
+        )
+
+        self.monster_rect = self.scaled_monster_image.get_rect(
+            center=(SCREEN_WIDTH // 2, 240)
+        )
+
+        self.monster_velocity = 1
 
         self.rope_active = False
 
@@ -207,8 +218,21 @@ class Level:
             self.player_killed = True
             self.rope_active = False
 
+        if self.monster_rect.centerx < 420 and self.monster_velocity > 0:
+            self.monster_rect.centerx += self.monster_velocity * delta_time * 60
+            if self.monster_rect.centerx >= 420:
+                self.monster_velocity *= -1
+
+        if self.monster_rect.centerx > 380 and self.monster_velocity < 0:
+            self.monster_rect.centerx += self.monster_velocity * delta_time * 60
+            if self.monster_rect.centerx <= 380:
+                self.monster_velocity *= -1
+
+        self.screen.blit(self.scaled_monster_image, self.monster_rect)
+
         if self.player_killed:
             self.screen.blit(self.game_over_message, self.game_over_rect)
+            # self.monster_velocity = 3
         elif not self.rope_active:
             self.screen.blit(self.start_message, self.start_message_rect)
 
