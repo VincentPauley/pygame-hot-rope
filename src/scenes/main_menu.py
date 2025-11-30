@@ -12,8 +12,6 @@ SCREEN_HEIGHT = game_config.window.size["height"]
 
 title_image_path = os.path.join("src", "assets", "hot-rope-title.png")
 
-print("title_image_path: ", title_image_path)
-
 
 def define_button_group(
     container_dimensions=(0, 0),
@@ -67,11 +65,11 @@ class MainMenu:
 
         self.title_image = pygame.image.load(title_image_path).convert_alpha()
 
-        # self.fireball_rect = self.fireball_image.get_rect(center=(100, 100))
-
         self.title_image_rect = self.title_image.get_rect(
             center=(SCREEN_WIDTH // 2, 140)
         )
+
+        self.title_image_velo = 0.6
 
         self.main_menu_buttons = define_button_group(
             (SCREEN_WIDTH, SCREEN_HEIGHT),
@@ -115,3 +113,11 @@ class MainMenu:
             button.draw(self.screen)
 
         self.screen.blit(self.title_image, self.title_image_rect)
+
+        self.title_image_rect.y += round(self.title_image_velo * delta_time * 60)
+
+        if self.title_image_rect.y > 60 and self.title_image_velo > 0:
+            self.title_image_velo = self.title_image_velo * -1
+
+        if self.title_image_rect.y < 10 and self.title_image_velo < 0:
+            self.title_image_velo = self.title_image_velo * -1
