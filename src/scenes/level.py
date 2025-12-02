@@ -5,8 +5,15 @@ import pygame
 
 from classes.button import Button
 from classes.easement import Easement
+from classes.player import Player, PlayerParams
 from colors import COLOR_PRIMARY_BLUE
 from config import game_config
+
+# time to code split and cleanup:
+
+# [ ] - player should be it's own class
+# [ ] - fireballs should be separate functions and be stored in a loop.
+# [ ] - move fireball image to asset folder
 
 pygame.font.init()
 font = pygame.font.SysFont("Arial", 30)
@@ -49,7 +56,10 @@ class Level:
 
     player_killed = False
 
+    player_class_instance = Player(PlayerParams())
+
     def __init__(self, display_screen, game_state_manager):
+        print(self.player_class_instance)
         self.screen = display_screen
         self.game_state_manager = game_state_manager
         self.main_menu_button = Button(
@@ -126,7 +136,7 @@ class Level:
             round(self.rope_circle_pos[1] + dist_from_center * cos_angle),
         ]
 
-    def calc_shadow(self):
+    def calc_player_shadow_rect(self):
         shadow = pygame.Rect(
             self.player_spot_x,
             self.palyer_spot_y + (self.player_height / 2),
@@ -169,7 +179,7 @@ class Level:
         #     ),
         # )
 
-        shadow_rect = self.calc_shadow()
+        shadow_rect = self.calc_player_shadow_rect()
 
         pygame.draw.ellipse(self.screen, "orange", shadow_rect)
 
@@ -231,5 +241,7 @@ class Level:
             # Note: Still not able to change speed from the easment class
         elif not self.rope_active:
             self.screen.blit(self.start_message, self.start_message_rect)
+
+        self.player_class_instance.draw(self.screen)
 
         # up next: "Click Space to start & Reset"
