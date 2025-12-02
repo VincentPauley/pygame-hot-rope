@@ -4,6 +4,7 @@ import os
 import pygame
 
 from classes.button import Button
+from classes.easement import Easement
 from colors import COLOR_PRIMARY_BLUE
 from config import game_config
 
@@ -93,6 +94,8 @@ class Level:
         self.game_over_rect = self.game_over_message.get_rect(
             center=(SCREEN_WIDTH // 2, 50)
         )
+
+        self.monster_easement = Easement(380, 420, 0.5)
 
     def reset(self):
         print("class Level: 'reset'")
@@ -218,21 +221,14 @@ class Level:
             self.player_killed = True
             self.rope_active = False
 
-        if self.monster_rect.centerx < 420 and self.monster_velocity > 0:
-            self.monster_rect.centerx += self.monster_velocity * delta_time * 60
-            if self.monster_rect.centerx >= 420:
-                self.monster_velocity *= -1
-
-        if self.monster_rect.centerx > 380 and self.monster_velocity < 0:
-            self.monster_rect.centerx += self.monster_velocity * delta_time * 60
-            if self.monster_rect.centerx <= 380:
-                self.monster_velocity *= -1
+        self.monster_easement.update(delta_time)
+        self.monster_rect.centerx = round(self.monster_easement.current_position)
 
         self.screen.blit(self.scaled_monster_image, self.monster_rect)
 
         if self.player_killed:
             self.screen.blit(self.game_over_message, self.game_over_rect)
-            # self.monster_velocity = 3
+            # Note: Still not able to change speed from the easment class
         elif not self.rope_active:
             self.screen.blit(self.start_message, self.start_message_rect)
 

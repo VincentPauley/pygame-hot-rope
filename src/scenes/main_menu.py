@@ -3,6 +3,7 @@ import os
 import pygame
 
 from classes.button import Button
+from classes.easement import Easement
 from colors import COLOR_PRIMARY_YELLOW
 from config import game_config
 
@@ -71,6 +72,8 @@ class MainMenu:
 
         self.title_image_velo = 0.6
 
+        self.title_y_easement = Easement(25, 55, 0.1)
+
         self.main_menu_buttons = define_button_group(
             (SCREEN_WIDTH, SCREEN_HEIGHT),
             "vertical",
@@ -112,12 +115,7 @@ class MainMenu:
             button.check_for_click()
             button.draw(self.screen)
 
+        self.title_y_easement.update(delta_time)
+        self.title_image_rect.y = round(self.title_y_easement.current_position)
+
         self.screen.blit(self.title_image, self.title_image_rect)
-
-        self.title_image_rect.y += round(self.title_image_velo * delta_time * 60)
-
-        if self.title_image_rect.y > 60 and self.title_image_velo > 0:
-            self.title_image_velo = self.title_image_velo * -1
-
-        if self.title_image_rect.y < 10 and self.title_image_velo < 0:
-            self.title_image_velo = self.title_image_velo * -1
