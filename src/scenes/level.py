@@ -56,10 +56,9 @@ class Level:
 
     player_killed = False
 
-    player_class_instance = Player(PlayerParams())
+    player_class_instance = Player(PlayerParams(coordinates=(250, SCREEN_HEIGHT - 150)))
 
     def __init__(self, display_screen, game_state_manager):
-        print(self.player_class_instance)
         self.screen = display_screen
         self.game_state_manager = game_state_manager
         self.main_menu_button = Button(
@@ -125,6 +124,10 @@ class Level:
         if not self.is_jumping:
             self.is_jumping = True
             self.velocity = -20
+
+    def receive_player_input(self, input_type: str):
+        if input_type == "space":
+            self.player_class_instance.receive_jump_input()
 
     # NOTE: does this need to be done for each fireball? might be able to just
     # do once for outer and then calc dist between those 2 points for other centers
@@ -242,6 +245,7 @@ class Level:
         elif not self.rope_active:
             self.screen.blit(self.start_message, self.start_message_rect)
 
+        self.player_class_instance.update(delta_time)
         self.player_class_instance.draw(self.screen)
 
         # up next: "Click Space to start & Reset"
