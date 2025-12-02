@@ -9,6 +9,9 @@ class PlayerParams(BaseModel):
     color: Optional[str] = "green"
     width: Optional[int] = 50
     height: Optional[int] = 50
+    # for debug
+    draw_hit_box: Optional[bool] = False
+    draw_starting_box: Optional[bool] = False
 
 
 class Player:
@@ -18,6 +21,8 @@ class Player:
         self.height = params.height
         self.color = params.color
         self.starting_coords = params.coordinates
+        self.draw_hit_box = params.draw_hit_box
+        self.draw_starting_box = params.draw_starting_box
         # non param fields
         self.velocity = 0
         self.gravity = 1
@@ -52,5 +57,20 @@ class Player:
     def draw(self, surface):
         # pygame.draw.rect(surface, self.color, self.rect)
 
+        if self.draw_starting_box:
+            pygame.draw.rect(
+                surface,
+                "blue",
+                (
+                    self.starting_coords[0],
+                    self.starting_coords[1],
+                    self.width,
+                    self.height,
+                ),
+            )
+
         # draw player as a circle for the time being...
         pygame.draw.circle(surface, self.color, self.rect.center, self.player_radius)
+
+        if self.draw_hit_box:
+            pygame.draw.rect(surface, "red", self.rect, 2)
