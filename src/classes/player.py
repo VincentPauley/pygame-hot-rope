@@ -30,6 +30,8 @@ class Player:
             self.height,
         )
 
+        self.player_radius = min(self.rect.width, self.rect.height) // 2
+
     def receive_jump_input(self):
         if not self.is_jumping:
             self.is_jumping = True
@@ -48,4 +50,7 @@ class Player:
     # TODO: lookup how to define surface in pydantic model so it doesn't need to be a param
     # every time. Maybe that becomes part of the entity class?
     def draw(self, surface):
-        pygame.draw.rect(surface, self.color, self.rect)
+        # pygame.draw.rect(surface, self.color, self.rect)
+
+        # draw player as a circle for the time being...
+        pygame.draw.circle(surface, self.color, self.rect.center, self.player_radius)
