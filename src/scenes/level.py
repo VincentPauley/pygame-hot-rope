@@ -1,5 +1,6 @@
 import math
 import os
+import random
 
 import pygame
 
@@ -34,13 +35,20 @@ image_path = os.path.join(script_dir, image_filename)
 
 starting_rope_angle = 25
 
+rope_speeds = {
+    "slow": 0.08,
+    "medium": 0.13,
+    "fast": 0.18,
+}
+
 
 class Level:
     rope_circle_pos = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
     rope_circle_radius = 275
 
     current_angle = starting_rope_angle
-    angular_velocity = 0.11
+    angular_velocity = rope_speeds["medium"]
+    active_rope_speed = "medium"
 
     outermost_fireball_pos = rope_circle_radius - 70
 
@@ -48,6 +56,7 @@ class Level:
 
     rope_passing_started = False
 
+    last_speed_change_rotation = 0
     rotations_completed = 0
 
     def __init__(self, display_screen, game_state_manager):
@@ -122,6 +131,39 @@ class Level:
             round(self.rope_circle_pos[1] + dist_from_center * cos_angle),
         ]
 
+    def variable_rope_speed_change(self):
+        if (
+            random.randint(
+                1, 8
+            )  # < smaller the second number, the more often speed changes
+            < self.rotations_completed - self.last_speed_change_rotation
+        ):
+            self.last_speed_change_rotation = self.rotations_completed
+
+            if self.active_rope_speed == "medium":
+                if random.choice([True, False]):
+                    self.active_rope_speed = "slow"
+                    self.angular_velocity = rope_speeds["slow"]
+                else:
+                    self.active_rope_speed = "fast"
+                    self.angular_velocity = rope_speeds["fast"]
+
+            if self.active_rope_speed == "slow":
+                if random.choice([True, False]):
+                    self.active_rope_speed = "medium"
+                    self.angular_velocity = rope_speeds["medium"]
+                else:
+                    self.active_rope_speed = "fast"
+                    self.angular_velocity = rope_speeds["fast"]
+
+            if self.active_rope_speed == "fast":
+                if random.choice([True, False]):
+                    self.active_rope_speed = "medium"
+                    self.angular_velocity = rope_speeds["medium"]
+                else:
+                    self.active_rope_speed = "slow"
+                    self.angular_velocity = rope_speeds["slow"]
+
     def run(self, delta_time):
         self.screen.blit(self.bg_image, (0, 0))
 
@@ -163,9 +205,8 @@ class Level:
             else:
                 if self.rope_passing_started:
                     self.rotations_completed += 1
-                    self.angular_velocity += (
-                        0.01  # 7 iterations became too much, .15 is prob the fast speed
-                    )
+
+                    self.variable_rope_speed_change()
 
                 self.rope_passing_started = False
 
