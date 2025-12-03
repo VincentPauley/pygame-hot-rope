@@ -3,16 +3,18 @@ import os
 
 import pygame
 
-from classes.button import Button
 from classes.easement import Easement
+from classes.end_game_menu import EndGameMenu
 from classes.player import Player, PlayerParams
-from colors import COLOR_PRIMARY_BLUE
 from config import game_config
 
 # time to code split and cleanup:
 
 # [ ] - fireballs should be separate functions and be stored in a loop.
 # [ ] - move fireball image to asset folder
+# might want to have all of the things in a scene as an array so you can just
+# loop through and update/draw the active ones and not worry about others... array
+# also might allow for straight up removal.
 
 pygame.font.init()
 font = pygame.font.SysFont("Arial", 30)
@@ -46,13 +48,7 @@ class Level:
     def __init__(self, display_screen, game_state_manager):
         self.screen = display_screen
         self.game_state_manager = game_state_manager
-        self.main_menu_button = Button(
-            "Main Menu",
-            lambda: game_state_manager.set_state("main_menu"),
-            COLOR_PRIMARY_BLUE,
-            (10, 10),
-            (150, 50),
-        )
+        self.end_game_menu = EndGameMenu(self.handle_main_menu_click, self.reset)
 
         self.fireball_image = pygame.image.load(image_path).convert_alpha()
 
@@ -83,6 +79,9 @@ class Level:
         )
 
         self.monster_easement = Easement(380, 420, 0.5)
+
+    def handle_main_menu_click(self):
+        self.game_state_manager.set_state("main_menu")
 
     # this can now adequetly reset the game from anywhere.
     def reset(self):
@@ -116,9 +115,7 @@ class Level:
 
     # step one: detect input and change color.
     def run(self, delta_time):
-        self.main_menu_button.check_for_click()
         self.screen.fill("navajowhite2")
-        self.main_menu_button.draw(self.screen)
 
         if self.rope_active:
             self.current_angle += self.angular_velocity * delta_time * 60
@@ -137,8 +134,6 @@ class Level:
         fireball_rect_2 = self.fireball_image.get_rect(center=(death_ball_2))
         fireball_rect_3 = self.fireball_image.get_rect(center=(death_ball_3))
         fireball_rect_4 = self.fireball_image.get_rect(center=(death_ball_4))
-
-        # fireball_rect
 
         self.screen.blit(self.fireball_image, fireball_rect)
         self.screen.blit(self.fireball_image, fireball_rect_2)
@@ -161,6 +156,8 @@ class Level:
 
         if self.game_over:
             self.screen.blit(self.game_over_message, self.game_over_rect)
+            self.end_game_menu.update()
+            self.end_game_menu.draw(self.screen)
             # Note: Still not able to change speed from the easment class
         elif not self.rope_active:
             self.screen.blit(self.start_message, self.start_message_rect)
