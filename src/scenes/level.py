@@ -54,8 +54,6 @@ class Level:
             (150, 50),
         )
 
-        self.player = Player(PlayerParams(coordinates=(250, SCREEN_HEIGHT - 150)))
-
         self.fireball_image = pygame.image.load(image_path).convert_alpha()
 
         self.fireball_rect = self.fireball_image.get_rect(center=(100, 100))
@@ -86,11 +84,14 @@ class Level:
 
         self.monster_easement = Easement(380, 420, 0.5)
 
+    # this can now adequetly reset the game from anywhere.
     def reset(self):
         print("class Level: 'reset'")
         self.starting_ticks = pygame.time.get_ticks()
         self.game_over = False
+        self.rope_active = False
         self.current_angle = starting_rope_angle
+        self.player = Player(PlayerParams(coordinates=(250, SCREEN_HEIGHT - 150)))
 
     def task_handler(self, task_key):
         if task_key == "reset":
@@ -144,13 +145,14 @@ class Level:
         self.screen.blit(self.fireball_image, fireball_rect_3)
         self.screen.blit(self.fireball_image, fireball_rect_4)
 
-        if (
-            fireball_rect.colliderect(self.player.rect)
-            and self.player.jump_height < 100
-        ):
-            self.player.killed = True
-            self.game_over = True
-            self.rope_active = False
+        if self.player.active:
+            if (
+                fireball_rect.colliderect(self.player.rect)
+                and self.player.jump_height < 100
+            ):
+                self.player.killed = True
+                self.game_over = True
+                self.rope_active = False
 
         self.monster_easement.update(delta_time)
         self.monster_rect.centerx = round(self.monster_easement.current_position)
@@ -163,11 +165,10 @@ class Level:
         elif not self.rope_active:
             self.screen.blit(self.start_message, self.start_message_rect)
 
-        self.player.update(delta_time)
-        self.player.draw(self.screen)
+        if self.player.active:
+            self.player.update(delta_time)
+            self.player.draw(self.screen)
 
         # up next: "Click Space to start & Reset"
-        # fling player
-        # have player remove themselves from class when killed
         # score keeping
         # varying speed of rope (do it with rotation count, not time)

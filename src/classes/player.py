@@ -31,6 +31,7 @@ class Player:
         self.jump_height = 0  # < can now use this for determining collision in more human readable way.
         self.killed = False
         self.killed_color = "darkred"
+        self.active = True  # update & draw functions will only run when active
 
         self.rect = pygame.Rect(
             params.coordinates[0],
@@ -59,6 +60,8 @@ class Player:
             self.y_velocity = -20
 
     def update(self, delta_time):
+        if self.killed and self.rect.right < 0:
+            self.active = False
         if self.killed:
             self.y_velocity = -5
             self.x_velocity = -22
