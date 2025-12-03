@@ -158,8 +158,8 @@ class Level:
         self.main_menu_button.draw(self.screen)
         # pygame.draw.rect(self.screen, self.player_color, self.player)
 
-        player_circle_center = self.player.center
-        player_circle_radius = min(self.player.width, self.player.height) // 2
+        # player_circle_center = self.player.center
+        # player_circle_radius = min(self.player.width, self.player.height) // 2
 
         # apply gravity to velo
         if self.is_jumping:
@@ -211,25 +211,9 @@ class Level:
         self.screen.blit(self.fireball_image, fireball_rect_3)
         self.screen.blit(self.fireball_image, fireball_rect_4)
 
-        current_color = self.dead_color if self.player_killed else self.player_color
-
-        # draw player to screen
-        pygame.draw.circle(
-            self.screen, current_color, player_circle_center, player_circle_radius
-        )
-
-        player_hit_box = pygame.Rect(0, 0, self.player.width, self.player.height)
-        player_hit_box.center = player_circle_center
-
-        # Draw Hit Boxes:
-        # pygame.draw.rect(self.screen, "red", fireball_rect, 2)
-        # pygame.draw.rect(self.screen, "blue", player_hit_box, 2)
-
-        # note: play with the allowed height here for "clearing the balls"
         if (
-            fireball_rect.colliderect(player_hit_box)
-            # and not self.is_jumping
-            and self.player.y > 350
+            fireball_rect.colliderect(self.player_class_instance.rect)
+            and self.player_class_instance.jump_height < 100
         ):
             self.player_killed = True
             self.rope_active = False

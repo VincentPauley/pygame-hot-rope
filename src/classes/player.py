@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 class PlayerParams(BaseModel):
     coordinates: Optional[Tuple[int, int]] = (0, 0)
-    color: Optional[str] = "green"
+    color: Optional[str] = "royalblue"
     width: Optional[int] = 50
     height: Optional[int] = 50
     # for debug
@@ -27,6 +27,7 @@ class Player:
         self.velocity = 0
         self.gravity = 1
         self.is_jumping = False
+        self.jump_height = 0  # < can now use this for determining collision in more human readable way.
 
         self.rect = pygame.Rect(
             params.coordinates[0],
@@ -46,17 +47,18 @@ class Player:
         if self.is_jumping:
             self.velocity = self.velocity + self.gravity
             self.rect.y += self.velocity * delta_time * 60
+            self.jump_height = self.starting_coords[1] - self.rect.y
             # player is back on ground, stop jump and reset
             if self.rect.y >= self.starting_coords[1]:
                 self.rect.y = self.starting_coords[1]
+                # reset internals
                 self.is_jumping = False
                 self.velocity = 0
+                self.jump_height = 0
 
     # TODO: lookup how to define surface in pydantic model so it doesn't need to be a param
     # every time. Maybe that becomes part of the entity class?
     def draw(self, surface):
-        # pygame.draw.rect(surface, self.color, self.rect)
-
         if self.draw_starting_box:
             pygame.draw.rect(
                 surface,
