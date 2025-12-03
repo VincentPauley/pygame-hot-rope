@@ -97,9 +97,9 @@ class Level:
         self.game_over = False
         self.rope_active = False
         self.current_angle = starting_rope_angle
-        self.player = Player(
-            PlayerParams(coordinates=(250, SCREEN_HEIGHT - 150), draw_starting_box=True)
-        )
+        self.angular_velocity = 0.11
+        self.rotations_completed = 0
+        self.player = Player(PlayerParams(coordinates=(250, SCREEN_HEIGHT - 150)))
 
     def task_handler(self, task_key):
         if task_key == "reset":
@@ -157,12 +157,15 @@ class Level:
                 self.game_over = True
                 self.rope_active = False
 
-        if self.player.active:
+        if self.player.active and self.rope_active:
             if fireball_rect.colliderect(self.player.player_idle_spot):
                 self.rope_passing_started = True
             else:
                 if self.rope_passing_started:
                     self.rotations_completed += 1
+                    self.angular_velocity += (
+                        0.01  # 7 iterations became too much, .15 is prob the fast speed
+                    )
 
                 self.rope_passing_started = False
 
