@@ -63,7 +63,6 @@ class Game:
                         and self.game_state_manager.get_state() == "level"
                     ):
                         # TODO: potential restriction down to scene level
-                        self.level.receive_jump_input()
                         self.level.receive_player_input("space")
                 # don't want to iterate events more than once, instead pass spacebara click to level from here
 

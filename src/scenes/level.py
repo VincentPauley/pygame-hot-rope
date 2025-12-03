@@ -11,7 +11,6 @@ from config import game_config
 
 # time to code split and cleanup:
 
-# [ ] - player should be it's own class
 # [ ] - fireballs should be separate functions and be stored in a loop.
 # [ ] - move fireball image to asset folder
 
@@ -34,18 +33,6 @@ starting_rope_angle = 25
 
 
 class Level:
-    velocity = 0
-    gravity = 1
-    is_jumping = False
-    jump_color = "royalblue1"
-    dead_color = "darkred"
-
-    player_width = 50
-    player_height = 50
-
-    player_spot_x = 250
-    palyer_spot_y = SCREEN_HEIGHT - 150
-
     rope_circle_pos = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
     rope_circle_radius = 275
 
@@ -55,8 +42,6 @@ class Level:
     outermost_fireball_pos = rope_circle_radius - 70
 
     game_over = False
-
-    player_class_instance = Player(PlayerParams(coordinates=(250, SCREEN_HEIGHT - 150)))
 
     def __init__(self, display_screen, game_state_manager):
         self.screen = display_screen
@@ -68,13 +53,8 @@ class Level:
             (10, 10),
             (150, 50),
         )
-        self.player_color = "royalblue"
-        self.player = pygame.Rect(
-            self.player_spot_x,
-            self.palyer_spot_y,
-            self.player_width,
-            self.player_height,
-        )
+
+        self.player = Player(PlayerParams(coordinates=(250, SCREEN_HEIGHT - 150)))
 
         self.fireball_image = pygame.image.load(image_path).convert_alpha()
 
@@ -118,16 +98,10 @@ class Level:
 
         self.game_state_manager.clear_task_queue()
 
-    def receive_jump_input(self):
-        self.rope_active = True
-        # note: no double jumps for now
-        if not self.is_jumping:
-            self.is_jumping = True
-            self.velocity = -20
-
     def receive_player_input(self, input_type: str):
         if input_type == "space":
-            self.player_class_instance.receive_jump_input()
+            self.rope_active = True
+            self.player.receive_jump_input()
 
     # NOTE: does this need to be done for each fireball? might be able to just
     # do once for outer and then calc dist between those 2 points for other centers
@@ -171,10 +145,10 @@ class Level:
         self.screen.blit(self.fireball_image, fireball_rect_4)
 
         if (
-            fireball_rect.colliderect(self.player_class_instance.rect)
-            and self.player_class_instance.jump_height < 100
+            fireball_rect.colliderect(self.player.rect)
+            and self.player.jump_height < 100
         ):
-            self.player_class_instance.killed = True
+            self.player.killed = True
             self.game_over = True
             self.rope_active = False
 
@@ -189,8 +163,8 @@ class Level:
         elif not self.rope_active:
             self.screen.blit(self.start_message, self.start_message_rect)
 
-        self.player_class_instance.update(delta_time)
-        self.player_class_instance.draw(self.screen)
+        self.player.update(delta_time)
+        self.player.draw(self.screen)
 
         # up next: "Click Space to start & Reset"
         # fling player

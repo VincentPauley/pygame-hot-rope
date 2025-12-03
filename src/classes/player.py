@@ -24,7 +24,8 @@ class Player:
         self.draw_hit_box = params.draw_hit_box
         self.draw_starting_box = params.draw_starting_box
         # non param fields
-        self.velocity = 0
+        self.y_velocity = 0
+        self.x_velocity = 0
         self.gravity = 1
         self.is_jumping = False
         self.jump_height = 0  # < can now use this for determining collision in more human readable way.
@@ -55,19 +56,24 @@ class Player:
     def receive_jump_input(self):
         if not self.is_jumping:
             self.is_jumping = True
-            self.velocity = -20
+            self.y_velocity = -20
 
     def update(self, delta_time):
+        if self.killed:
+            self.y_velocity = -5
+            self.x_velocity = -22
+            self.rect.y += self.y_velocity * delta_time * 60
+            self.rect.x += self.x_velocity * delta_time * 60
         if self.is_jumping:
-            self.velocity = self.velocity + self.gravity
-            self.rect.y += self.velocity * delta_time * 60
+            self.y_velocity = self.y_velocity + self.gravity
+            self.rect.y += self.y_velocity * delta_time * 60
             self.jump_height = self.starting_coords[1] - self.rect.y
             # player is back on ground, stop jump and reset
             if self.rect.y >= self.starting_coords[1]:
                 self.rect.y = self.starting_coords[1]
                 # reset internals
                 self.is_jumping = False
-                self.velocity = 0
+                self.y_velocity = 0
                 self.jump_height = 0
 
     # TODO: lookup how to define surface in pydantic model so it doesn't need to be a param
@@ -85,11 +91,12 @@ class Player:
                 ),
             )
 
-        pygame.draw.ellipse(
-            surface,
-            "orange",
-            self.calc_player_shadow_rect(),
-        )
+        if not self.killed:
+            pygame.draw.ellipse(
+                surface,
+                "orange",
+                self.calc_player_shadow_rect(),
+            )
 
         # draw player as a circle for the time being...
         pygame.draw.circle(
