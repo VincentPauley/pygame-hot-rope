@@ -27,6 +27,7 @@ script_dir = os.path.dirname(__file__)
 image_filename = "fireball.png"
 
 monster_image_path = os.path.join("src", "assets", "hot-rope-monster.png")
+bg_image_path = os.path.join("src", "assets", "beach-bg.png")
 
 image_path = os.path.join(script_dir, image_filename)
 
@@ -45,12 +46,18 @@ class Level:
 
     game_over = False
 
+    rope_passing_started = False
+
+    rotations_completed = 0
+
     def __init__(self, display_screen, game_state_manager):
         self.screen = display_screen
         self.game_state_manager = game_state_manager
         self.end_game_menu = EndGameMenu(self.handle_main_menu_click, self.reset)
 
         self.fireball_image = pygame.image.load(image_path).convert_alpha()
+
+        self.bg_image = pygame.image.load(bg_image_path).convert()
 
         self.fireball_rect = self.fireball_image.get_rect(center=(100, 100))
 
@@ -90,7 +97,9 @@ class Level:
         self.game_over = False
         self.rope_active = False
         self.current_angle = starting_rope_angle
-        self.player = Player(PlayerParams(coordinates=(250, SCREEN_HEIGHT - 150)))
+        self.player = Player(
+            PlayerParams(coordinates=(250, SCREEN_HEIGHT - 150), draw_starting_box=True)
+        )
 
     def task_handler(self, task_key):
         if task_key == "reset":
@@ -113,9 +122,8 @@ class Level:
             round(self.rope_circle_pos[1] + dist_from_center * cos_angle),
         ]
 
-    # step one: detect input and change color.
     def run(self, delta_time):
-        self.screen.fill("navajowhite2")
+        self.screen.blit(self.bg_image, (0, 0))
 
         if self.rope_active:
             self.current_angle += self.angular_velocity * delta_time * 60
@@ -149,10 +157,23 @@ class Level:
                 self.game_over = True
                 self.rope_active = False
 
+        if self.player.active:
+            if fireball_rect.colliderect(self.player.player_idle_spot):
+                self.rope_passing_started = True
+            else:
+                if self.rope_passing_started:
+                    self.rotations_completed += 1
+
+                self.rope_passing_started = False
+
         self.monster_easement.update(delta_time)
         self.monster_rect.centerx = round(self.monster_easement.current_position)
 
         self.screen.blit(self.scaled_monster_image, self.monster_rect)
+
+        self.screen.blit(
+            font.render(str(self.rotations_completed), True, "black"), (700, 10, 30, 30)
+        )
 
         if self.game_over:
             self.screen.blit(self.game_over_message, self.game_over_rect)
@@ -166,6 +187,5 @@ class Level:
             self.player.update(delta_time)
             self.player.draw(self.screen)
 
-        # up next: "Click Space to start & Reset"
         # score keeping
         # varying speed of rope (do it with rotation count, not time)

@@ -23,6 +23,15 @@ class Player:
         self.starting_coords = params.coordinates
         self.draw_hit_box = params.draw_hit_box
         self.draw_starting_box = params.draw_starting_box
+        self.rect = pygame.Rect(
+            params.coordinates[0],
+            params.coordinates[1],
+            self.width,
+            self.height,
+        )
+        self.player_idle_spot = pygame.Rect(
+            self.starting_coords[0], self.starting_coords[1], self.width, self.height
+        )
         # non param fields
         self.y_velocity = 0
         self.x_velocity = 0
@@ -32,13 +41,6 @@ class Player:
         self.killed = False
         self.killed_color = "darkred"
         self.active = True  # update & draw functions will only run when active
-
-        self.rect = pygame.Rect(
-            params.coordinates[0],
-            params.coordinates[1],
-            self.width,
-            self.height,
-        )
 
         self.player_radius = min(self.rect.width, self.rect.height) // 2
 
@@ -85,13 +87,8 @@ class Player:
         if self.draw_starting_box:
             pygame.draw.rect(
                 surface,
-                "blue",
-                (
-                    self.starting_coords[0],
-                    self.starting_coords[1],
-                    self.width,
-                    self.height,
-                ),
+                "red",
+                self.player_idle_spot,
             )
 
         if not self.killed:
