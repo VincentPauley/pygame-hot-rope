@@ -28,6 +28,8 @@ class Player:
         self.gravity = 1
         self.is_jumping = False
         self.jump_height = 0  # < can now use this for determining collision in more human readable way.
+        self.killed = False
+        self.killed_color = "darkred"
 
         self.rect = pygame.Rect(
             params.coordinates[0],
@@ -37,6 +39,18 @@ class Player:
         )
 
         self.player_radius = min(self.rect.width, self.rect.height) // 2
+
+    def calc_player_shadow_rect(self):
+        shadow = pygame.Rect(
+            self.starting_coords[0],
+            self.starting_coords[1] + self.height / 2,  # position just under player
+            self.width + self.jump_height * 0.3,
+            self.height * 0.8,
+        )
+
+        shadow.centerx = self.rect.centerx
+
+        return shadow
 
     def receive_jump_input(self):
         if not self.is_jumping:
@@ -71,8 +85,19 @@ class Player:
                 ),
             )
 
+        pygame.draw.ellipse(
+            surface,
+            "orange",
+            self.calc_player_shadow_rect(),
+        )
+
         # draw player as a circle for the time being...
-        pygame.draw.circle(surface, self.color, self.rect.center, self.player_radius)
+        pygame.draw.circle(
+            surface,
+            self.killed_color if self.killed else self.color,
+            self.rect.center,
+            self.player_radius,
+        )
 
         if self.draw_hit_box:
             pygame.draw.rect(surface, "red", self.rect, 2)

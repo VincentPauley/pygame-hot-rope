@@ -54,7 +54,7 @@ class Level:
 
     outermost_fireball_pos = rope_circle_radius - 70
 
-    player_killed = False
+    game_over = False
 
     player_class_instance = Player(PlayerParams(coordinates=(250, SCREEN_HEIGHT - 150)))
 
@@ -109,7 +109,7 @@ class Level:
     def reset(self):
         print("class Level: 'reset'")
         self.starting_ticks = pygame.time.get_ticks()
-        self.player_killed = False
+        self.game_over = False
         self.current_angle = starting_rope_angle
 
     def task_handler(self, task_key):
@@ -139,52 +139,11 @@ class Level:
             round(self.rope_circle_pos[1] + dist_from_center * cos_angle),
         ]
 
-    def calc_player_shadow_rect(self):
-        shadow = pygame.Rect(
-            self.player_spot_x,
-            self.palyer_spot_y + (self.player_height / 2),
-            self.player_width * (SCREEN_HEIGHT - self.player.y) / 140,
-            self.player_height * 0.8,
-        )
-
-        shadow.centerx = self.player.centerx
-
-        return shadow
-
     # step one: detect input and change color.
     def run(self, delta_time):
         self.main_menu_button.check_for_click()
         self.screen.fill("navajowhite2")
         self.main_menu_button.draw(self.screen)
-        # pygame.draw.rect(self.screen, self.player_color, self.player)
-
-        # player_circle_center = self.player.center
-        # player_circle_radius = min(self.player.width, self.player.height) // 2
-
-        # apply gravity to velo
-        if self.is_jumping:
-            self.velocity = self.velocity + self.gravity
-            self.player.y += self.velocity * delta_time * 60
-            if self.player.y >= self.palyer_spot_y:
-                self.player.y = self.palyer_spot_y
-                self.is_jumping = False
-                self.velocity = 0
-
-        # draw player spot
-        # pygame.draw.rect(
-        #     self.screen,
-        #     "white",
-        #     (
-        #         self.player_spot_x,
-        #         self.palyer_spot_y,
-        #         self.player_width,
-        #         self.player_height,
-        #     ),
-        # )
-
-        shadow_rect = self.calc_player_shadow_rect()
-
-        pygame.draw.ellipse(self.screen, "orange", shadow_rect)
 
         if self.rope_active:
             self.current_angle += self.angular_velocity * delta_time * 60
@@ -215,7 +174,8 @@ class Level:
             fireball_rect.colliderect(self.player_class_instance.rect)
             and self.player_class_instance.jump_height < 100
         ):
-            self.player_killed = True
+            self.player_class_instance.killed = True
+            self.game_over = True
             self.rope_active = False
 
         self.monster_easement.update(delta_time)
@@ -223,7 +183,7 @@ class Level:
 
         self.screen.blit(self.scaled_monster_image, self.monster_rect)
 
-        if self.player_killed:
+        if self.game_over:
             self.screen.blit(self.game_over_message, self.game_over_rect)
             # Note: Still not able to change speed from the easment class
         elif not self.rope_active:
@@ -233,3 +193,7 @@ class Level:
         self.player_class_instance.draw(self.screen)
 
         # up next: "Click Space to start & Reset"
+        # fling player
+        # have player remove themselves from class when killed
+        # score keeping
+        # varying speed of rope (do it with rotation count, not time)
