@@ -24,14 +24,17 @@ class Button(Entity):
 
         self.text = text
         self.onclick = onclick
+        self.pressed = False
 
-    # TODO: there is a bug here... need to handle only click from mouse up etc.
     def check_for_click(self):
         mouse_pos = pygame.mouse.get_pos()
         mouse_pressed = pygame.mouse.get_pressed()
         if self.rect.collidepoint(mouse_pos):
             if mouse_pressed[0]:
+                self.pressed = True
+            if not mouse_pressed[0] and self.pressed:
                 self.onclick()
+                self.pressed = False
 
     def draw(self, surface):
         pygame.draw.rect(surface, self.color, self.rect, border_radius=5)
