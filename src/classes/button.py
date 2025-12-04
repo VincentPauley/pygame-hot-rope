@@ -25,11 +25,7 @@ class Button(Entity):
         self.text = text
         self.onclick = onclick
 
-    # TODO: hover state detection
-    def detect_click(self, event):
-        if self.rect.collidepoint(event.pos):
-            self.onclick()
-
+    # TODO: there is a bug here... need to handle only click from mouse up etc.
     def check_for_click(self):
         mouse_pos = pygame.mouse.get_pos()
         mouse_pressed = pygame.mouse.get_pressed()

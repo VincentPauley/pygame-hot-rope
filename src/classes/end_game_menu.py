@@ -3,6 +3,7 @@
 import pygame
 
 from classes.button import Button
+from colors import COLOR_PRIMARY_BLUE
 from config import game_config
 
 
@@ -20,30 +21,40 @@ class EndGameMenu:
             game_config.window.size["height"] // 2,
         )
 
+        self.inner_rect = pygame.Rect(
+            self.outer_rect.x + 10,
+            self.outer_rect.y + 10,
+            self.outer_rect.width - 20,
+            self.outer_rect.height - 20,
+        )
+
         self.main_menu_button = Button(
             "Main Menu",
             lambda: main_menu_handler(),
-            (200, 200, 200),
-            (self.outer_rect.centerx - 100, 140),
+            COLOR_PRIMARY_BLUE,
+            (0, 0),
             (200, 50),
         )
         self.retry_button = Button(
             "Retry",
             lambda: reset_handler(),
-            (200, 200, 200),
-            (self.outer_rect.centerx - 100, 220),
+            COLOR_PRIMARY_BLUE,
+            (0, 0),
             (200, 50),
         )
 
-    # def handle_main_click(self):
-    #     print("hande main click")
+        self.retry_button.rect.right = self.inner_rect.centerx - 10
+        self.main_menu_button.rect.left = self.inner_rect.centerx + 10
+
+        self.main_menu_button.rect.bottom = self.inner_rect.bottom - 20
+        self.retry_button.rect.bottom = self.inner_rect.bottom - 20
 
     def update(self):
         self.main_menu_button.check_for_click()
         self.retry_button.check_for_click()
 
     def draw(self, surface):
-        pygame.draw.rect(surface, "black", self.outer_rect)
-
+        pygame.draw.rect(surface, "azure2", self.outer_rect, border_radius=10)
+        pygame.draw.rect(surface, "azure3", self.inner_rect, border_radius=5)
         self.main_menu_button.draw(surface)
         self.retry_button.draw(surface)

@@ -38,10 +38,10 @@ class Scene:
 
     def process_events(self):
         for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                for i in self.entities:
-                    if hasattr(i, "detect_click"):
-                        i.detect_click(event)
+            # if event.type == pygame.MOUSEBUTTONDOWN:
+            #     for i in self.entities:
+            #         if hasattr(i, "detect_click"):
+            #             i.detect_click(event)
             if event.type == pygame.QUIT:
                 self.on_quit()
             if event.type == self.time_event:
