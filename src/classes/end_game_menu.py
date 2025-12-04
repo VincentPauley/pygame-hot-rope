@@ -1,13 +1,15 @@
-# this serves as a popup modal once game over is hit to display score
-# and allow for the user to either restart or go back to main menu
 import pygame
 
 from classes.button import Button
 from colors import COLOR_PRIMARY_BLUE
 from config import game_config
 
+font = pygame.font.SysFont("Arial", 50)
+
 
 class EndGameMenu:
+    score = 0
+
     def __init__(self, main_menu_handler, reset_handler):
         self.outer_rect = pygame.Rect(
             0,
@@ -49,12 +51,34 @@ class EndGameMenu:
         self.main_menu_button.rect.bottom = self.inner_rect.bottom - 20
         self.retry_button.rect.bottom = self.inner_rect.bottom - 20
 
+        self.score_display = font.render(f"Score: {str(self.score)}", True, "black")
+
+        self.score_disply_rect = self.score_display.get_rect(
+            center=(self.inner_rect.centerx, self.inner_rect.top + 50)
+        )
+
+    def receive_and_calc_score(self, rotations_survived):
+        print("receive_and_calc_score:", rotations_survived)
+        self.score = rotations_survived * 10
+        self.score_display = font.render(f"Score: {str(self.score)}", True, "black")
+
+        self.score_disply_rect = self.score_display.get_rect(
+            center=(self.inner_rect.centerx, self.inner_rect.top + 50)
+        )
+
     def update(self):
         self.main_menu_button.check_for_click()
         self.retry_button.check_for_click()
+        # self.score += 1
+        # self.score_display = font.render(f"Score: {str(self.score)}", True, "black")
+
+        # self.score_disply_rect = self.score_display.get_rect(
+        #     center=(self.inner_rect.centerx, self.inner_rect.top + 50)
+        # )
 
     def draw(self, surface):
         pygame.draw.rect(surface, "azure2", self.outer_rect, border_radius=10)
         pygame.draw.rect(surface, "azure3", self.inner_rect, border_radius=5)
         self.main_menu_button.draw(surface)
         self.retry_button.draw(surface)
+        surface.blit(self.score_display, self.score_disply_rect)

@@ -190,7 +190,8 @@ class Level:
         self.screen.blit(self.fireball_image, fireball_rect_3)
         self.screen.blit(self.fireball_image, fireball_rect_4)
 
-        if self.player.active:
+        # detect player death
+        if not self.player.killed:
             if (
                 fireball_rect.colliderect(self.player.rect)
                 and self.player.jump_height < 100
@@ -198,6 +199,7 @@ class Level:
                 self.player.killed = True
                 self.game_over = True
                 self.rope_active = False
+                self.end_game_menu.receive_and_calc_score(self.rotations_completed)
 
         if self.player.active and self.rope_active:
             if fireball_rect.colliderect(self.player.player_idle_spot):
@@ -232,4 +234,3 @@ class Level:
             self.player.draw(self.screen)
 
         # score keeping
-        # varying speed of rope (do it with rotation count, not time)
