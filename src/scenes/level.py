@@ -217,10 +217,6 @@ class Level:
 
         self.screen.blit(self.scaled_monster_image, self.monster_rect)
 
-        self.screen.blit(
-            font.render(str(self.rotations_completed), True, "black"), (700, 10, 30, 30)
-        )
-
         if self.game_over:
             self.screen.blit(self.game_over_message, self.game_over_rect)
             self.end_game_menu.update()
