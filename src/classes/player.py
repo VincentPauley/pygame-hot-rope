@@ -1,14 +1,20 @@
 from typing import Optional, Tuple
+import os
 
 import pygame
 from pydantic import BaseModel
 
 
+image_path = os.path.join("src", "assets", "froggy.png")
+
+
 class PlayerParams(BaseModel):
-    coordinates: Optional[Tuple[int, int]] = (0, 0)
+    coordinates: Optional[Tuple [int, int]] = (0, 0)
     color: Optional[str] = "royalblue"
     width: Optional[int] = 50
     height: Optional[int] = 50
+
+    
     # for debug
     draw_hit_box: Optional[bool] = False
     draw_starting_box: Optional[bool] = False
@@ -23,12 +29,15 @@ class Player:
         self.starting_coords = params.coordinates
         self.draw_hit_box = params.draw_hit_box
         self.draw_starting_box = params.draw_starting_box
-        self.rect = pygame.Rect(
-            params.coordinates[0],
-            params.coordinates[1],
-            self.width,
-            self.height,
-        )
+        self.image = pygame.image.load(image_path).convert_alpha()
+        # self.rect = pygame.Rect(
+        #     params.coordinates[0], 
+        #     params.coordinates[1],
+        #     self.width,
+        #     self.height,
+        # )
+        # probright here with off cent
+        self.rect = self.image.get_rect(center=(params.coordinates[0], params.coordinates[1] + self.height /2))
         self.player_idle_spot = pygame.Rect(
             self.starting_coords[0], self.starting_coords[1], self.width, self.height
         )
@@ -60,7 +69,7 @@ class Player:
         if not self.is_jumping:
             self.is_jumping = True
             self.y_velocity = -20
-
+ 
     def update(self, delta_time):
         if self.killed and self.rect.right < 0:
             self.active = False
@@ -98,13 +107,7 @@ class Player:
                 self.calc_player_shadow_rect(),
             )
 
-        # draw player as a circle for the time being...
-        pygame.draw.circle(
-            surface,
-            self.killed_color if self.killed else self.color,
-            self.rect.center,
-            self.player_radius,
-        )
+        surface.blit(self.image, self.rect)
 
         if self.draw_hit_box:
             pygame.draw.rect(surface, "red", self.rect, 2)
