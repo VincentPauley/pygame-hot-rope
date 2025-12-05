@@ -15,14 +15,6 @@ from classes.fireball import (
 from classes.player import Player, PlayerParams
 from config import game_config
 
-# time to code split and cleanup:
-
-# [ ] - fireballs should be separate functions and be stored in a loop.
-# [ ] - move fireball image to asset folder
-# might want to have all of the things in a scene as an array so you can just
-# loop through and update/draw the active ones and not worry about others... array
-# also might allow for straight up removal.
-
 pygame.font.init()
 font = pygame.font.SysFont("Arial", 30)
 
@@ -37,7 +29,6 @@ monster_image_path = os.path.join("src", "assets", "hot-rope-monster.png")
 bg_image_path = os.path.join("src", "assets", "beach-bg.png")
 
 image_path = os.path.join(script_dir, image_filename)
-
 
 starting_rope_angle = 25
 
@@ -110,12 +101,14 @@ class Level:
                 FireballParams(
                     # x_pos=dist_position * 100,
                     group=self.fireball_group,
-                    # center_point=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
-                    center_point=(200, 200),
+                    center_point=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
+                    # center_point=(200, 200),
                     dist_from_center=dist_position,
                     outer_ball_center=self.rope_circle_radius - 70,
                 )
             )
+
+        # might not be the most efficient but just run collisions on all of these for now
 
     def handle_main_menu_click(self):
         self.game_state_manager.set_state("main_menu")
@@ -196,32 +189,21 @@ class Level:
         cos_angle = math.cos(self.current_angle)
         sin_angle = math.sin(self.current_angle)
 
+        # TODO: still need these for calcing rope pass but should come from outer fireball
         death_ball_1 = self.calc_fireball_pos(1, cos_angle, sin_angle)
-        death_ball_2 = self.calc_fireball_pos(0.75, cos_angle, sin_angle)
-        death_ball_3 = self.calc_fireball_pos(0.5, cos_angle, sin_angle)
-        death_ball_4 = self.calc_fireball_pos(0.25, cos_angle, sin_angle)
-
         fireball_rect = self.fireball_image.get_rect(center=(death_ball_1))
-        fireball_rect_2 = self.fireball_image.get_rect(center=(death_ball_2))
-        fireball_rect_3 = self.fireball_image.get_rect(center=(death_ball_3))
-        fireball_rect_4 = self.fireball_image.get_rect(center=(death_ball_4))
-
-        self.screen.blit(self.fireball_image, fireball_rect)
-        self.screen.blit(self.fireball_image, fireball_rect_2)
-        self.screen.blit(self.fireball_image, fireball_rect_3)
-        self.screen.blit(self.fireball_image, fireball_rect_4)
 
         # detect player death
         if not self.player.killed:
-            if (
-                fireball_rect.colliderect(self.player.rect)
-                and self.player.jump_height < 100
-            ):
+            collisions = pygame.sprite.spritecollide(self.player, self.fireball_group, False)
+
+            if (len(collisions) and self.player.jump_height < 100):
                 self.player.killed = True
                 self.game_over = True
                 self.rope_active = False
                 self.end_game_menu.receive_and_calc_score(self.rotations_completed)
 
+        # detect rope clear
         if self.player.active and self.rope_active:
             if fireball_rect.colliderect(self.player.player_idle_spot):
                 self.rope_passing_started = True
@@ -245,16 +227,17 @@ class Level:
             # Note: Still not able to change speed from the easment class
         elif not self.rope_active:
             self.screen.blit(self.start_message, self.start_message_rect)
-
-        if self.player.active:
-            self.player.update(delta_time)
-            self.player.draw(self.screen)
-
+        
         self.fireball_group.update(
             FireballUpdateParams(
                 delta=delta_time,
                 angles=FireballPosParams(cos_angle=cos_angle, sin_angle=sin_angle),
             )
         )
-        # )  # < Huge perk, auto calls on the whole group. don't need to loop
-        self.fireball_group.draw(self.screen)
+
+        if not self.game_over:
+            self.fireball_group.draw(self.screen)
+
+        if self.player.active:
+            self.player.update(delta_time)
+            self.player.draw(self.screen)
