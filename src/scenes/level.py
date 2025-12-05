@@ -6,7 +6,12 @@ import pygame
 
 from classes.easement import Easement
 from classes.end_game_menu import EndGameMenu
-from classes.fireball import Fireball, FireballParams
+from classes.fireball import (
+    Fireball,
+    FireballParams,
+    FireballPosParams,
+    FireballUpdateParams,
+)
 from classes.player import Player, PlayerParams
 from config import game_config
 
@@ -246,8 +251,10 @@ class Level:
             self.player.draw(self.screen)
 
         self.fireball_group.update(
-            delta_time, cos_angle, sin_angle
-        )  # < Huge perk, auto calls on the whole group. don't need to loop
+            FireballUpdateParams(
+                delta=delta_time,
+                angles=FireballPosParams(cos_angle=cos_angle, sin_angle=sin_angle),
+            )
+        )
+        # )  # < Huge perk, auto calls on the whole group. don't need to loop
         self.fireball_group.draw(self.screen)
-        # ^ only weird thing to me at this point is that you need a group even if there
-        # is only one in the group. but it's cool it draws itself obviously :)

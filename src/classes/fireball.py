@@ -15,9 +15,14 @@ class FireballParams(pydantic.BaseModel):
     outer_ball_center: int
 
 
-class FireballUpdateParams(pydantic.BaseModel):
+class FireballPosParams(pydantic.BaseModel):
     cos_angle: float
     sin_angle: float
+
+
+class FireballUpdateParams(pydantic.BaseModel):
+    delta: float
+    angles: FireballPosParams
 
 
 class Fireball(pygame.sprite.Sprite):
@@ -33,7 +38,7 @@ class Fireball(pygame.sprite.Sprite):
         self.center_point = fireballParams.center_point
         self.outer_ball_center = fireballParams.outer_ball_center
 
-    def _calc_and_apply_position(self, params: FireballUpdateParams):
+    def _calc_and_apply_position(self, params: FireballPosParams):
         base_dist = self.outer_ball_center * self.dist_from_center
 
         x = self.center_point[0] + base_dist * params.cos_angle
@@ -41,12 +46,12 @@ class Fireball(pygame.sprite.Sprite):
 
         self.rect.center = (x, y)
 
-    def update(self, delta, cos, sin):
-        self.rect.y += 2 * delta * 60
+    def update(self, params: FireballUpdateParams):
+        self.rect.y += 2 * params.delta * 60
 
         self._calc_and_apply_position(
-            FireballUpdateParams(
-                cos_angle=cos,
-                sin_angle=sin,
+            FireballPosParams(
+                cos_angle=params.angles.cos_angle,
+                sin_angle=params.angles.sin_angle,
             )
         )
