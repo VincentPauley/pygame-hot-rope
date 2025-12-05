@@ -6,6 +6,7 @@ import pygame
 
 from classes.easement import Easement
 from classes.end_game_menu import EndGameMenu
+from classes.fireball import Fireball, FireballParams
 from classes.player import Player, PlayerParams
 from config import game_config
 
@@ -95,6 +96,15 @@ class Level:
         )
 
         self.monster_easement = Easement(380, 420, 0.5)
+
+        self.fireball_group = pygame.sprite.Group()
+
+        self.fireball_sprite = Fireball(
+            FireballParams(
+                group=self.fireball_group,
+                center_point=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
+            )
+        )
 
     def handle_main_menu_click(self):
         self.game_state_manager.set_state("main_menu")
@@ -229,4 +239,9 @@ class Level:
             self.player.update(delta_time)
             self.player.draw(self.screen)
 
-        # score keeping
+        self.fireball_group.update(
+            delta_time
+        )  # < Huge perk, auto calls on the whole group. don't need to loop
+        self.fireball_group.draw(self.screen)
+        # ^ only weird thing to me at this point is that you need a group even if there
+        # is only one in the group. but it's cool it draws itself obviously :)
