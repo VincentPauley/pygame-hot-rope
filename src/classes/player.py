@@ -20,7 +20,7 @@ class PlayerParams(BaseModel):
     draw_starting_box: Optional[bool] = False
 
 
-class Player:
+class Player(pygame.sprite.Sprite):
     def __init__(self, params: PlayerParams):
         # TODO: width/height probably don't need to be stored as indvidual keys, accessible from rect.
         self.width = params.width
@@ -30,13 +30,6 @@ class Player:
         self.draw_hit_box = params.draw_hit_box
         self.draw_starting_box = params.draw_starting_box
         self.image = pygame.image.load(image_path).convert_alpha()
-        # self.rect = pygame.Rect(
-        #     params.coordinates[0], 
-        #     params.coordinates[1],
-        #     self.width,
-        #     self.height,
-        # )
-        # probright here with off cent
         self.rect = self.image.get_rect(center=(params.coordinates[0], params.coordinates[1] + self.height /2))
         self.player_idle_spot = pygame.Rect(
             self.starting_coords[0], self.starting_coords[1], self.width, self.height
