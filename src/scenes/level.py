@@ -99,12 +99,18 @@ class Level:
 
         self.fireball_group = pygame.sprite.Group()
 
-        self.fireball_sprite = Fireball(
-            FireballParams(
-                group=self.fireball_group,
-                center_point=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
+        # note: no need to keep your own array in sprite groups, just attach to group
+        for dist_position in [1, 0.75, 0.5, 0.25]:
+            self.fireball_sprite = Fireball(
+                FireballParams(
+                    # x_pos=dist_position * 100,
+                    group=self.fireball_group,
+                    # center_point=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
+                    center_point=(200, 200),
+                    dist_from_center=dist_position,
+                    outer_ball_center=self.rope_circle_radius - 70,
+                )
             )
-        )
 
     def handle_main_menu_click(self):
         self.game_state_manager.set_state("main_menu")
@@ -240,7 +246,7 @@ class Level:
             self.player.draw(self.screen)
 
         self.fireball_group.update(
-            delta_time
+            delta_time, cos_angle, sin_angle
         )  # < Huge perk, auto calls on the whole group. don't need to loop
         self.fireball_group.draw(self.screen)
         # ^ only weird thing to me at this point is that you need a group even if there
