@@ -30,6 +30,7 @@ bg_image_path = os.path.join("src", "assets", "beach-bg.png")
 
 image_path = os.path.join(script_dir, image_filename)
 
+# TODO: potentially store level config all in one place for easy tweaking
 starting_rope_angle = 25
 
 rope_speeds = {
@@ -48,7 +49,7 @@ class PlayerStartingPlace(pygame.sprite.Sprite):
         self.starting_x = 250
         self.starting_y = SCREEN_HEIGHT - 150
 
-        self.image = pygame.Surface([50, 50])
+        self.image = pygame.Surface([game_config.player.width, game_config.player.height])
 
         self.rect = self.image.get_rect()
         self.rect.x = self.starting_x
