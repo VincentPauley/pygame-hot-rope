@@ -38,6 +38,21 @@ rope_speeds = {
     "fast": 0.18,
 }
 
+# where the player starts and where they are when not jumping.
+player_starting_coords = (250, SCREEN_HEIGHT - 150)
+
+# example of a sprite here used only for it's positioning and collisions
+# but is not actually drawn to screen.
+class PlayerStartingPlace(pygame.sprite.Sprite):
+    def __init__(self):
+        self.starting_x = 250
+        self.starting_y = SCREEN_HEIGHT - 150
+
+        self.image = pygame.Surface([50, 50])
+
+        self.rect = self.image.get_rect()
+        self.rect.x = self.starting_x
+        self.rect.y = self.starting_y
 
 class Level:
     rope_circle_pos = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
@@ -91,24 +106,29 @@ class Level:
             center=(SCREEN_WIDTH // 2, 50)
         )
 
+        self.starting_pos = PlayerStartingPlace()
+
         self.monster_easement = Easement(380, 420, 0.5)
 
         self.fireball_group = pygame.sprite.Group()
 
-        # note: no need to keep your own array in sprite groups, just attach to group
+        self.fireball_outer = pygame.sprite.Group()
+
+        # key advantage to sprites shown here: able to easily add specific sprites to one
+        # or more groups and react on those groups and their relationships seamlessly.
         for dist_position in [1, 0.75, 0.5, 0.25]:
-            self.fireball_sprite = Fireball(
+            fireball_instance = Fireball(
                 FireballParams(
-                    # x_pos=dist_position * 100,
-                    group=self.fireball_group,
+                    group=self.fireball_group, # < add fireballs to sprite group rather than an array in class
                     center_point=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
-                    # center_point=(200, 200),
                     dist_from_center=dist_position,
                     outer_ball_center=self.rope_circle_radius - 70,
                 )
             )
 
-        # might not be the most efficient but just run collisions on all of these for now
+            if dist_position == 1:
+                # add outer ball to group for checking collision with player and rope pass
+                self.fireball_outer.add(fireball_instance)
 
     def handle_main_menu_click(self):
         self.game_state_manager.set_state("main_menu")
@@ -122,7 +142,7 @@ class Level:
         self.current_angle = starting_rope_angle
         self.angular_velocity = 0.11
         self.rotations_completed = 0
-        self.player = Player(PlayerParams(coordinates=(250, SCREEN_HEIGHT - 150)))
+        self.player = Player(PlayerParams(coordinates=player_starting_coords))
 
     def task_handler(self, task_key):
         if task_key == "reset":
@@ -134,16 +154,6 @@ class Level:
         if input_type == "space":
             self.rope_active = True
             self.player.receive_jump_input()
-
-    # NOTE: does this need to be done for each fireball? might be able to just
-    # do once for outer and then calc dist between those 2 points for other centers
-    def calc_fireball_pos(self, center_offset, sin_angle, cos_angle):
-        dist_from_center = self.outermost_fireball_pos * center_offset
-
-        return [
-            round(self.rope_circle_pos[0] + dist_from_center * sin_angle),
-            round(self.rope_circle_pos[1] + dist_from_center * cos_angle),
-        ]
 
     def variable_rope_speed_change(self):
         if (
@@ -189,13 +199,10 @@ class Level:
         cos_angle = math.cos(self.current_angle)
         sin_angle = math.sin(self.current_angle)
 
-        # TODO: still need these for calcing rope pass but should come from outer fireball
-        death_ball_1 = self.calc_fireball_pos(1, cos_angle, sin_angle)
-        fireball_rect = self.fireball_image.get_rect(center=(death_ball_1))
-
         # detect player death
         if not self.player.killed:
-            collisions = pygame.sprite.spritecollide(self.player, self.fireball_group, False)
+            # note: only the outer fireball is checked for efficiency but could detect all fireballs by replacing group
+            collisions = pygame.sprite.spritecollide(self.player, self.fireball_outer, False)
 
             if (len(collisions) and self.player.jump_height < 100):
                 self.player.killed = True
@@ -205,7 +212,8 @@ class Level:
 
         # detect rope clear
         if self.player.active and self.rope_active:
-            if fireball_rect.colliderect(self.player.player_idle_spot):
+            collision = pygame.sprite.spritecollide(self.starting_pos, self.fireball_outer, False)
+            if (len(collision)):
                 self.rope_passing_started = True
             else:
                 if self.rope_passing_started:
@@ -214,11 +222,6 @@ class Level:
                     self.variable_rope_speed_change()
 
                 self.rope_passing_started = False
-
-        self.monster_easement.update(delta_time)
-        self.monster_rect.centerx = round(self.monster_easement.current_position)
-
-        self.screen.blit(self.scaled_monster_image, self.monster_rect)
 
         if self.game_over:
             self.screen.blit(self.game_over_message, self.game_over_rect)
@@ -237,6 +240,11 @@ class Level:
 
         if not self.game_over:
             self.fireball_group.draw(self.screen)
+
+            self.monster_easement.update(delta_time)
+            self.monster_rect.centerx = round(self.monster_easement.current_position)
+
+            self.screen.blit(self.scaled_monster_image, self.monster_rect)
 
         if self.player.active:
             self.player.update(delta_time)

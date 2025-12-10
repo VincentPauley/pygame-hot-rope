@@ -48,3 +48,6 @@ class Easement:
                 self.moving_toward_a = False
                 self.moving_toward_b = True
                 self.velocity = self.original_velocity
+
+        # TODO: might have massively overthought this: should use a percentage based on how close the current_position is
+        # to the midpoint rather than adjusting the velocity itself.

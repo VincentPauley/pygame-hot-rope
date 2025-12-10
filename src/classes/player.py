@@ -14,6 +14,8 @@ class PlayerParams(BaseModel):
     width: Optional[int] = 50
     height: Optional[int] = 50
 
+# potentially, the idel spot becomes a param that is passed in as a sprite so it can be used
+# by other classes and collided with.
     
     # for debug
     draw_hit_box: Optional[bool] = False
