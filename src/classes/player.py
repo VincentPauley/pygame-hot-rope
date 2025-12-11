@@ -1,22 +1,21 @@
-from typing import Optional, Tuple
 import os
+from typing import Optional, Tuple
 
 import pygame
 from pydantic import BaseModel
-
 
 image_path = os.path.join("src", "assets", "froggy.png")
 
 
 class PlayerParams(BaseModel):
-    coordinates: Optional[Tuple [int, int]] = (0, 0)
+    coordinates: Optional[Tuple[int, int]] = (0, 0)
     color: Optional[str] = "royalblue"
     width: Optional[int] = 50
     height: Optional[int] = 50
 
-# potentially, the idel spot becomes a param that is passed in as a sprite so it can be used
-# by other classes and collided with.
-    
+    # potentially, the idel spot becomes a param that is passed in as a sprite so it can be used
+    # by other classes and collided with.
+
     # for debug
     draw_hit_box: Optional[bool] = False
     draw_starting_box: Optional[bool] = False
@@ -32,7 +31,9 @@ class Player(pygame.sprite.Sprite):
         self.draw_hit_box = params.draw_hit_box
         self.draw_starting_box = params.draw_starting_box
         self.image = pygame.image.load(image_path).convert_alpha()
-        self.rect = self.image.get_rect(center=(params.coordinates[0], params.coordinates[1] + self.height /2))
+        self.rect = self.image.get_rect(
+            center=(params.coordinates[0], params.coordinates[1] + self.height / 2)
+        )
         self.player_idle_spot = pygame.Rect(
             self.starting_coords[0], self.starting_coords[1], self.width, self.height
         )
@@ -50,8 +51,8 @@ class Player(pygame.sprite.Sprite):
 
     def calc_player_shadow_rect(self):
         shadow = pygame.Rect(
-            self.starting_coords[0],
-            self.starting_coords[1] + self.height / 2,  # position just under player
+            self.player_idle_spot.x,
+            self.player_idle_spot.y + self.height / 2,  # position just under player
             self.width + self.jump_height * 0.3,
             self.height * 0.8,
         )
@@ -64,7 +65,7 @@ class Player(pygame.sprite.Sprite):
         if not self.is_jumping:
             self.is_jumping = True
             self.y_velocity = -20
- 
+
     def update(self, delta_time):
         if self.killed and self.rect.right < 0:
             self.active = False
@@ -76,10 +77,10 @@ class Player(pygame.sprite.Sprite):
         if self.is_jumping:
             self.y_velocity = self.y_velocity + self.gravity
             self.rect.y += self.y_velocity * delta_time * 60
-            self.jump_height = self.starting_coords[1] - self.rect.y
+            self.jump_height = self.player_idle_spot.y - self.rect.y
             # player is back on ground, stop jump and reset
-            if self.rect.y >= self.starting_coords[1]:
-                self.rect.y = self.starting_coords[1]
+            if self.rect.y >= self.player_idle_spot.y:
+                self.rect.y = self.player_idle_spot.y
                 # reset internals
                 self.is_jumping = False
                 self.y_velocity = 0
