@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Tuple
+from typing import Any, Optional
 
 import pygame
 from pydantic import BaseModel
@@ -8,14 +8,10 @@ image_path = os.path.join("src", "assets", "froggy.png")
 
 
 class PlayerParams(BaseModel):
-    coordinates: Optional[Tuple[int, int]] = (0, 0)
     color: Optional[str] = "royalblue"
     width: Optional[int] = 50
     height: Optional[int] = 50
-
-    # potentially, the idel spot becomes a param that is passed in as a sprite so it can be used
-    # by other classes and collided with.
-
+    starting_rect: Any
     # for debug
     draw_hit_box: Optional[bool] = False
     draw_starting_box: Optional[bool] = False
@@ -27,16 +23,13 @@ class Player(pygame.sprite.Sprite):
         self.width = params.width
         self.height = params.height
         self.color = params.color
-        self.starting_coords = params.coordinates
         self.draw_hit_box = params.draw_hit_box
         self.draw_starting_box = params.draw_starting_box
         self.image = pygame.image.load(image_path).convert_alpha()
         self.rect = self.image.get_rect(
-            center=(params.coordinates[0], params.coordinates[1] + self.height / 2)
+            center=(params.starting_rect.x, params.starting_rect.y + self.height / 2)
         )
-        self.player_idle_spot = pygame.Rect(
-            self.starting_coords[0], self.starting_coords[1], self.width, self.height
-        )
+        self.starting_rect = params.starting_rect
         # non param fields
         self.y_velocity = 0
         self.x_velocity = 0
@@ -44,15 +37,13 @@ class Player(pygame.sprite.Sprite):
         self.is_jumping = False
         self.jump_height = 0  # < can now use this for determining collision in more human readable way.
         self.killed = False
-        self.killed_color = "darkred"
         self.active = True  # update & draw functions will only run when active
-
         self.player_radius = min(self.rect.width, self.rect.height) // 2
 
     def calc_player_shadow_rect(self):
         shadow = pygame.Rect(
-            self.player_idle_spot.x,
-            self.player_idle_spot.y + self.height / 2,  # position just under player
+            self.starting_rect.x,
+            self.starting_rect.y + self.height / 2,  # position just under player
             self.width + self.jump_height * 0.3,
             self.height * 0.8,
         )
@@ -77,10 +68,10 @@ class Player(pygame.sprite.Sprite):
         if self.is_jumping:
             self.y_velocity = self.y_velocity + self.gravity
             self.rect.y += self.y_velocity * delta_time * 60
-            self.jump_height = self.player_idle_spot.y - self.rect.y
+            self.jump_height = self.starting_rect.y - self.rect.y
             # player is back on ground, stop jump and reset
-            if self.rect.y >= self.player_idle_spot.y:
-                self.rect.y = self.player_idle_spot.y
+            if self.rect.y >= self.starting_rect.y:
+                self.rect.y = self.starting_rect.y
                 # reset internals
                 self.is_jumping = False
                 self.y_velocity = 0
@@ -93,7 +84,7 @@ class Player(pygame.sprite.Sprite):
             pygame.draw.rect(
                 surface,
                 "red",
-                self.player_idle_spot,
+                self.starting_rect,
             )
 
         if not self.killed:

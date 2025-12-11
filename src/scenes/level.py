@@ -42,6 +42,7 @@ rope_speeds = {
 # where the player starts and where they are when not jumping.
 player_starting_coords = (250, SCREEN_HEIGHT - 150)
 
+
 # example of a sprite here used only for it's positioning and collisions
 # but is not actually drawn to screen.
 class PlayerStartingPlace(pygame.sprite.Sprite):
@@ -49,11 +50,14 @@ class PlayerStartingPlace(pygame.sprite.Sprite):
         self.starting_x = 250
         self.starting_y = SCREEN_HEIGHT - 150
 
-        self.image = pygame.Surface([game_config.player.width, game_config.player.height])
+        self.image = pygame.Surface(
+            [game_config.player.width, game_config.player.height]
+        )
 
         self.rect = self.image.get_rect()
         self.rect.x = self.starting_x
         self.rect.y = self.starting_y
+
 
 class Level:
     rope_circle_pos = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
@@ -120,7 +124,7 @@ class Level:
         for dist_position in [1, 0.75, 0.5, 0.25]:
             fireball_instance = Fireball(
                 FireballParams(
-                    group=self.fireball_group, # < add fireballs to sprite group rather than an array in class
+                    group=self.fireball_group,  # < add fireballs to sprite group rather than an array in class
                     center_point=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
                     dist_from_center=dist_position,
                     outer_ball_center=self.rope_circle_radius - 70,
@@ -143,7 +147,7 @@ class Level:
         self.current_angle = starting_rope_angle
         self.angular_velocity = 0.11
         self.rotations_completed = 0
-        self.player = Player(PlayerParams(coordinates=player_starting_coords))
+        self.player = Player(PlayerParams(starting_rect=self.starting_pos.rect))
 
     def task_handler(self, task_key):
         if task_key == "reset":
@@ -203,9 +207,11 @@ class Level:
         # detect player death
         if not self.player.killed:
             # note: only the outer fireball is checked for efficiency but could detect all fireballs by replacing group
-            collisions = pygame.sprite.spritecollide(self.player, self.fireball_outer, False)
+            collisions = pygame.sprite.spritecollide(
+                self.player, self.fireball_outer, False
+            )
 
-            if (len(collisions) and self.player.jump_height < 100):
+            if len(collisions) and self.player.jump_height < 100:
                 self.player.killed = True
                 self.game_over = True
                 self.rope_active = False
@@ -213,8 +219,10 @@ class Level:
 
         # detect rope clear
         if self.player.active and self.rope_active:
-            collision = pygame.sprite.spritecollide(self.starting_pos, self.fireball_outer, False)
-            if (len(collision)):
+            collision = pygame.sprite.spritecollide(
+                self.starting_pos, self.fireball_outer, False
+            )
+            if len(collision):
                 self.rope_passing_started = True
             else:
                 if self.rope_passing_started:
@@ -231,7 +239,7 @@ class Level:
             # Note: Still not able to change speed from the easment class
         elif not self.rope_active:
             self.screen.blit(self.start_message, self.start_message_rect)
-        
+
         self.fireball_group.update(
             FireballUpdateParams(
                 delta=delta_time,
