@@ -1,8 +1,13 @@
+import os
+
 import pygame
 
 from classes.button import Button
 from colors import COLOR_PRIMARY_BLUE
 from config import game_config
+
+empty_star_image_path = os.path.join("src", "assets", "empty-star.png")
+
 
 font = pygame.font.SysFont("Arial", 50)
 
@@ -49,6 +54,8 @@ class EndGameMenu:
             (200, 50),
         )
 
+        self.empty_star_image = pygame.image.load(empty_star_image_path).convert_alpha()
+
         self.retry_button.rect.right = self.inner_rect.centerx - 10
         self.main_menu_button.rect.left = self.inner_rect.centerx + 10
 
@@ -61,9 +68,23 @@ class EndGameMenu:
             center=(self.inner_rect.centerx, self.inner_rect.top + 50)
         )
 
-        self.middle_star_rect = pygame.Rect(0, 0, 100, 100)
+        # split all this into it's own function now.
+
+        self.middle_star_rect = self.empty_star_image.get_rect()
+
         self.middle_star_rect.centerx = self.score_disply_rect.centerx
         self.middle_star_rect.centery = self.score_disply_rect.bottom + 100
+
+        self.left_star_rect = self.empty_star_image.get_rect()
+
+        # other 2 stars are
+        self.left_star_rect.centerx = self.middle_star_rect.centerx - 120
+        self.left_star_rect.centery = self.middle_star_rect.centery
+
+        self.right_star_rect = self.empty_star_image.get_rect()
+
+        self.right_star_rect.centerx = self.middle_star_rect.centerx + 120
+        self.right_star_rect.centery = self.middle_star_rect.centery
 
     def receive_and_calc_score(self, rotations_survived):
         self.score = rotations_survived * 10
@@ -84,4 +105,7 @@ class EndGameMenu:
         self.retry_button.draw(surface)
         surface.blit(self.score_display, self.score_disply_rect)
 
-        pygame.draw.rect(surface, "gold", self.middle_star_rect)
+        # these just need to know which image to blit based on score
+        surface.blit(self.empty_star_image, self.left_star_rect)
+        surface.blit(self.empty_star_image, self.middle_star_rect)
+        surface.blit(self.empty_star_image, self.right_star_rect)
