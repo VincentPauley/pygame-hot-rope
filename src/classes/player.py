@@ -4,13 +4,12 @@ from typing import Any, Optional
 import pygame
 from pydantic import BaseModel
 
+from config import game_config
+
 image_path = os.path.join("src", "assets", "froggy.png")
 
 
 class PlayerParams(BaseModel):
-    color: Optional[str] = "royalblue"
-    width: Optional[int] = 50
-    height: Optional[int] = 50
     starting_rect: Any
     # for debug
     draw_hit_box: Optional[bool] = False
@@ -19,10 +18,8 @@ class PlayerParams(BaseModel):
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, params: PlayerParams):
-        # TODO: width/height probably don't need to be stored as indvidual keys, accessible from rect.
-        self.width = params.width
-        self.height = params.height
-        self.color = params.color
+        self.width = game_config.player.width
+        self.height = game_config.player.height
         self.draw_hit_box = params.draw_hit_box
         self.draw_starting_box = params.draw_starting_box
         self.image = pygame.image.load(image_path).convert_alpha()
