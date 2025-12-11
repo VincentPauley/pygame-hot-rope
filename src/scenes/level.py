@@ -23,12 +23,9 @@ SCREEN_HEIGHT = game_config.window.size["height"]
 
 script_dir = os.path.dirname(__file__)
 
-image_filename = "fireball.png"
 
 monster_image_path = os.path.join("src", "assets", "hot-rope-monster.png")
 bg_image_path = os.path.join("src", "assets", "beach-bg.png")
-
-image_path = os.path.join(script_dir, image_filename)
 
 # TODO: potentially store level config all in one place for easy tweaking
 starting_rope_angle = 25
@@ -81,11 +78,7 @@ class Level:
         self.game_state_manager = game_state_manager
         self.end_game_menu = EndGameMenu(self.handle_main_menu_click, self.reset)
 
-        self.fireball_image = pygame.image.load(image_path).convert_alpha()
-
         self.bg_image = pygame.image.load(bg_image_path).convert()
-
-        self.fireball_rect = self.fireball_image.get_rect(center=(100, 100))
 
         self.monster_image = pygame.image.load(monster_image_path).convert_alpha()
 
