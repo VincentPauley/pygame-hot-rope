@@ -21,9 +21,6 @@ font = pygame.font.SysFont("Arial", 30)
 SCREEN_WIDTH = game_config.window.size["width"]
 SCREEN_HEIGHT = game_config.window.size["height"]
 
-script_dir = os.path.dirname(__file__)
-
-
 monster_image_path = os.path.join("src", "assets", "hot-rope-monster.png")
 bg_image_path = os.path.join("src", "assets", "beach-bg.png")
 

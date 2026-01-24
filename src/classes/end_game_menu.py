@@ -6,7 +6,7 @@ from classes.button import Button
 from colors import COLOR_PRIMARY_BLUE
 from config import game_config
 
-empty_star_image_path = os.path.join("src", "assets", "empty-star.png")
+empty_star_image_path = os.path.join("src", "assets", "star.png")
 
 
 font = pygame.font.SysFont("Arial", 50)
