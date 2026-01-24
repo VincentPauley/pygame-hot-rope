@@ -1,9 +1,9 @@
 import math
-import os
 import random
 
 import pygame
 
+from assets import AssetManager
 from classes.easement import Easement
 from classes.end_game_menu import EndGameMenu
 from classes.fireball import (
@@ -20,9 +20,6 @@ font = pygame.font.SysFont("Arial", 30)
 
 SCREEN_WIDTH = game_config.window.size["width"]
 SCREEN_HEIGHT = game_config.window.size["height"]
-
-monster_image_path = os.path.join("src", "assets", "hot-rope-monster.png")
-bg_image_path = os.path.join("src", "assets", "beach-bg.png")
 
 # TODO: potentially store level config all in one place for easy tweaking
 starting_rope_angle = 25
@@ -71,13 +68,14 @@ class Level:
     rotations_completed = 0
 
     def __init__(self, display_screen, game_state_manager):
+        self.asset_manager = AssetManager()
+        self.asset_manager.load_images()
         self.screen = display_screen
         self.game_state_manager = game_state_manager
         self.end_game_menu = EndGameMenu(self.handle_main_menu_click, self.reset)
 
-        self.bg_image = pygame.image.load(bg_image_path).convert()
-
-        self.monster_image = pygame.image.load(monster_image_path).convert_alpha()
+        self.bg_image = self.asset_manager.get_image("beach_bg")
+        self.monster_image = self.asset_manager.get_image("monster")
 
         self.scaled_monster_image = pygame.transform.scale(
             self.monster_image, (140, 200)

@@ -1,7 +1,6 @@
-import os
-
 import pygame
 
+from assets import AssetManager
 from classes.button import Button
 from classes.easement import Easement
 from colors import COLOR_PRIMARY_YELLOW
@@ -9,9 +8,6 @@ from config import game_config
 
 SCREEN_WIDTH = game_config.window.size["width"]
 SCREEN_HEIGHT = game_config.window.size["height"]
-
-
-title_image_path = os.path.join("src", "assets", "hot-rope-title.png")
 
 
 def define_button_group(
@@ -63,8 +59,10 @@ class MainMenu:
     def __init__(self, display_screen, game_state_manager):
         self.screen = display_screen
         self.game_state_manager = game_state_manager
+        self.asset_manager = AssetManager()
+        self.asset_manager.load_images()
 
-        self.title_image = pygame.image.load(title_image_path).convert_alpha()
+        self.title_image = self.asset_manager.get_image("main_title")
 
         self.title_image_rect = self.title_image.get_rect(
             center=(SCREEN_WIDTH // 2, 140)
