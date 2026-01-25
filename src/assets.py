@@ -23,6 +23,7 @@ class AssetManager:
         self._register_image("monster", "hot-rope-monster.png")
         self._register_image("main_title", "hot-rope-title.png")
         self._register_image("beach_bg", "beach-bg.png", False)
+        self._register_image("foreground", "foreground-bushes.png")
 
     def _register_image(self, image_name, image_filename, transparent=True):
         loaded_asset = pygame.image.load(self._path(image_filename))

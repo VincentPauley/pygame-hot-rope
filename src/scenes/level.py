@@ -75,6 +75,7 @@ class Level:
 
         self.bg_image = self.asset_manager.get_image("beach_bg")
         self.monster_image = self.asset_manager.get_image("monster")
+        self.foreground = self.asset_manager.get_image("foreground")
 
         self.scaled_monster_image = pygame.transform.scale(
             self.monster_image, (140, 200)
@@ -83,6 +84,8 @@ class Level:
         self.monster_rect = self.scaled_monster_image.get_rect(
             center=(SCREEN_WIDTH // 2, 240)
         )
+
+        self.foreground_rect = self.foreground.get_rect(bottom=SCREEN_HEIGHT)
 
         self.monster_velocity = 1
 
@@ -93,10 +96,10 @@ class Level:
             center=(SCREEN_WIDTH // 2, 50)
         )
 
-        self.game_over_message = font.render("Game Over!", True, "black")
-        self.game_over_rect = self.game_over_message.get_rect(
-            center=(SCREEN_WIDTH // 2, 50)
-        )
+        # self.game_over_message = font.render("Game Over!", True, "black")
+        # self.game_over_rect = self.game_over_message.get_rect(
+        #     center=(SCREEN_WIDTH // 2, 50)
+        # )
 
         self.starting_pos = PlayerStartingPlace()
 
@@ -220,7 +223,8 @@ class Level:
                 self.rope_passing_started = False
 
         if self.game_over:
-            self.screen.blit(self.game_over_message, self.game_over_rect)
+            # self.screen.blit(self.game_over_message, self.game_over_rect)
+            self.screen.blit(self.foreground, self.foreground_rect)
             self.end_game_menu.update()
             self.end_game_menu.draw(self.screen)
             # Note: Still not able to change speed from the easment class
@@ -241,6 +245,7 @@ class Level:
             self.monster_rect.centerx = round(self.monster_easement.current_position)
 
             self.screen.blit(self.scaled_monster_image, self.monster_rect)
+            self.screen.blit(self.foreground, self.foreground_rect)
 
         if self.player.active:
             self.player.update(delta_time)
