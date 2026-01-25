@@ -14,6 +14,7 @@ font = pygame.font.SysFont("Arial", 50)
 
 class EndGameMenu:
     score = 0
+    stars = 0
 
     def __init__(self, main_menu_handler, reset_handler):
         self.asset_manager = AssetManager()
@@ -51,7 +52,13 @@ class EndGameMenu:
             (200, 50),
         )
 
-        self.empty_star_image = self.asset_manager.get_image("star")
+        self.empty_star_image = self.asset_manager.get_image("empty_star")
+        self.star_image = self.asset_manager.get_image("star")
+
+        # all stars set to empty at base
+        self.star_one_image = self.empty_star_image
+        self.star_two_image = self.empty_star_image
+        self.star_three_image = self.empty_star_image
 
         self.retry_button.rect.right = self.inner_rect.centerx - 10
         self.main_menu_button.rect.left = self.inner_rect.centerx + 10
@@ -85,6 +92,24 @@ class EndGameMenu:
 
     def receive_and_calc_score(self, rotations_survived):
         self.score = rotations_survived * 10
+
+        self.star_one_image = self.empty_star_image
+        self.star_two_image = self.empty_star_image
+        self.star_three_image = self.empty_star_image
+
+        if self.score >= game_config.star_values.three:
+            self.stars = 3
+            self.star_one_image = self.star_image
+            self.star_two_image = self.star_image
+            self.star_three_image = self.star_image
+        elif self.score >= game_config.star_values.two:
+            self.stars = 2
+            self.star_one_image = self.star_image
+            self.star_two_image = self.star_image
+        elif self.score >= game_config.star_values.one:
+            self.stars = 1
+            self.star_one_image = self.star_image
+
         self.score_display = font.render(f"Score: {str(self.score)}", True, "black")
 
         self.score_disply_rect = self.score_display.get_rect(
@@ -103,6 +128,6 @@ class EndGameMenu:
         surface.blit(self.score_display, self.score_disply_rect)
 
         # these just need to know which image to blit based on score
-        surface.blit(self.empty_star_image, self.left_star_rect)
-        surface.blit(self.empty_star_image, self.middle_star_rect)
-        surface.blit(self.empty_star_image, self.right_star_rect)
+        surface.blit(self.star_one_image, self.left_star_rect)
+        surface.blit(self.star_two_image, self.middle_star_rect)
+        surface.blit(self.star_three_image, self.right_star_rect)

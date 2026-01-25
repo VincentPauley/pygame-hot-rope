@@ -20,6 +20,7 @@ class AssetManager:
         self._register_image("froggy", "froggy.png")
         self._register_image("fireball", "fireball.png")
         self._register_image("star", "star.png")
+        self._register_image("empty_star", "empty-star.png")
         self._register_image("monster", "hot-rope-monster.png")
         self._register_image("main_title", "hot-rope-title.png")
         self._register_image("beach_bg", "beach-bg.png", False)
