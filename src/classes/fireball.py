@@ -1,10 +1,9 @@
-import os
 from typing import Any, Tuple
 
 import pydantic
 import pygame
 
-image_path = os.path.join("src", "assets", "fireball.png")
+from assets import AssetManager
 
 
 # NOTE: probably need a sibling class for rebounding fireballs later
@@ -29,7 +28,8 @@ class Fireball(pygame.sprite.Sprite):
     def __init__(self, fireballParams: FireballParams):
         super().__init__(fireballParams.group)
 
-        self.image = pygame.image.load(image_path).convert_alpha()
+        self.asset_manager = AssetManager()
+        self.image = self.asset_manager.get_image("fireball")
         self.dist_from_center = fireballParams.dist_from_center
 
         # TODO: move back to under rect soon

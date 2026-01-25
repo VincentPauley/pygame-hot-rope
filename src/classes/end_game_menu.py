@@ -1,13 +1,9 @@
-import os
-
 import pygame
 
+from assets import AssetManager
 from classes.button import Button
 from colors import COLOR_PRIMARY_BLUE
 from config import game_config
-
-empty_star_image_path = os.path.join("src", "assets", "star.png")
-
 
 font = pygame.font.SysFont("Arial", 50)
 
@@ -20,6 +16,7 @@ class EndGameMenu:
     score = 0
 
     def __init__(self, main_menu_handler, reset_handler):
+        self.asset_manager = AssetManager()
         self.outer_rect = pygame.Rect(
             0,
             0,
@@ -54,7 +51,7 @@ class EndGameMenu:
             (200, 50),
         )
 
-        self.empty_star_image = pygame.image.load(empty_star_image_path).convert_alpha()
+        self.empty_star_image = self.asset_manager.get_image("star")
 
         self.retry_button.rect.right = self.inner_rect.centerx - 10
         self.main_menu_button.rect.left = self.inner_rect.centerx + 10

@@ -60,7 +60,6 @@ class MainMenu:
         self.screen = display_screen
         self.game_state_manager = game_state_manager
         self.asset_manager = AssetManager()
-        self.asset_manager.load_images()
 
         self.title_image = self.asset_manager.get_image("main_title")
 

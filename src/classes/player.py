@@ -1,12 +1,10 @@
-import os
 from typing import Any, Optional
 
 import pygame
 from pydantic import BaseModel
 
+from assets import AssetManager
 from config import game_config
-
-image_path = os.path.join("src", "assets", "froggy.png")
 
 
 class PlayerParams(BaseModel):
@@ -18,11 +16,12 @@ class PlayerParams(BaseModel):
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, params: PlayerParams):
+        self.asset_manager = AssetManager()
         self.width = game_config.player.width
         self.height = game_config.player.height
         self.draw_hit_box = params.draw_hit_box
         self.draw_starting_box = params.draw_starting_box
-        self.image = pygame.image.load(image_path).convert_alpha()
+        self.image = self.asset_manager.get_image("froggy")
         self.rect = self.image.get_rect(
             center=(params.starting_rect.x, params.starting_rect.y + self.height / 2)
         )

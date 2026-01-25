@@ -69,7 +69,6 @@ class Level:
 
     def __init__(self, display_screen, game_state_manager):
         self.asset_manager = AssetManager()
-        self.asset_manager.load_images()
         self.screen = display_screen
         self.game_state_manager = game_state_manager
         self.end_game_menu = EndGameMenu(self.handle_main_menu_click, self.reset)
