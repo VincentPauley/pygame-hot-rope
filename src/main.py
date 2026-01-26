@@ -1,5 +1,3 @@
-import sys
-
 import pygame
 
 from config import game_config
@@ -14,14 +12,6 @@ FONT_NAME = "Arial"
 
 font = pygame.font.SysFont(FONT_NAME, 30)
 
-
-def handle_quit():
-    print("main_2.py handle quit")
-    # scene_manager.running = False
-    pygame.quit()
-    sys.exit()
-
-
 # want to figure out how to pass single function calls to scenes
 # that only run one time like a close out or reset.
 class Game:
@@ -30,6 +20,7 @@ class Game:
     def __init__(self):
         pygame.init()
         pygame.display.set_caption(game_config.window.caption)
+        pygame.event.clear()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
 
@@ -43,6 +34,9 @@ class Game:
         self._register_scene("level", Level)
 
         self.running = True
+
+    def _handle_quit(self):
+        pygame.quit()
 
     def _register_scene(self, scene_name, custom_class):
         self.scene_dictionary[scene_name] = custom_class(self.screen, self.game_state_manager)
@@ -75,6 +69,10 @@ class Game:
             # other scenes etc?
 
             if current_scene_task:
+                print(f"processing scene: {current_scene} task: {current_scene_task['task']}")
+                if current_scene_task['task'] == 'quit':
+                    self._handle_quit()
+                    return
                 # TODO: potential here for callback that removes task from queue after completion
                 self.scene_dictionary[current_scene].task_handler(current_scene_task["task"])
 
@@ -92,6 +90,9 @@ class GameStateManager:
 
     def get_state(self):
         return self.currentState
+    
+    def append_task(self, scene, task):
+        self.task_queue.append({"scene_key": scene, "task": task})
 
     def set_state(self, newState):
         self.currentState = newState

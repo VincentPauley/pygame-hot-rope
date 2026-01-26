@@ -149,7 +149,6 @@ class Level:
         self.game_state_manager.clear_task_queue()
 
     def receive_player_input(self, input_type: str):
-        print("receive_player_input() called!")
         if input_type == "space":
             self.rope_active = True
             self.player.receive_jump_input()

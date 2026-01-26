@@ -92,10 +92,12 @@ class MainMenu(Scene):
                         "rebounder_experiment"  # TODO: these should be passed in somehow rather than hard-coded
                     ),
                 },
-                # NOTE: this is causing issues with quitting since another frame is attempted
-                {"text": "Quit", "onclick": lambda: pygame.quit()},
+                {"text": "Quit", "onclick": self.handle_quit},
             ],
         )
+
+    def handle_quit(self):
+        self.game_state_manager.append_task("main_menu", "quit")
 
     def reset(self):
         print("class MainMenu: 'reset'")
@@ -103,7 +105,6 @@ class MainMenu(Scene):
 
     def task_handler(self, task_key):
         if task_key == "reset":
-            print("task handler was called")
             self.reset()
 
         self.game_state_manager.clear_task_queue()
