@@ -17,7 +17,7 @@ font = pygame.font.SysFont(FONT_NAME, 30)
 class Game:
     running = False
 
-    def __init__(self):
+    def __init__(self, scenes):
         pygame.init()
         pygame.display.set_caption(game_config.window.caption)
         pygame.event.clear()
@@ -29,9 +29,8 @@ class Game:
         # Initialize scene dictionary before registering scenes
         self.scene_dictionary = {}
 
-        self._register_scene("main_menu", MainMenu)
-        self._register_scene("rebounder_experiment", RebounderExperiment)
-        self._register_scene("level", Level)
+        for scene in scenes:
+            self._register_scene(scene["key"], scene["class"])
 
         self.running = True
 
@@ -103,5 +102,9 @@ class GameStateManager:
 
 
 if __name__ == "__main__":
-    game = Game()
+    game = Game([
+        {"key": "main_menu", "class": MainMenu},
+        {"key": "rebounder_experiment", "class": RebounderExperiment},
+        {"key": "level", "class": Level},
+    ])
     game.run()
