@@ -14,6 +14,7 @@ from classes.fireball import (
 )
 from classes.player import Player, PlayerParams
 from config import game_config
+from scene_keys import SceneKey
 
 pygame.font.init()
 font = pygame.font.SysFont("Arial", 30)
@@ -129,7 +130,7 @@ class Level:
         self.player = Player(PlayerParams(starting_rect=self.starting_pos.rect))
 
     def handle_main_menu_click(self):
-        self.game_state_manager.set_state("main_menu")
+        self.game_state_manager.set_state(SceneKey.MAIN_MENU.value)
 
     # this can now adequetly reset the game from anywhere.
     def reset(self):

@@ -6,6 +6,7 @@ from classes.easement import Easement
 from classes.scene import Scene, SceneConfig
 from colors import COLOR_PRIMARY_YELLOW
 from config import game_config
+from scene_keys import SceneKey
 
 SCREEN_WIDTH = game_config.window.size["width"]
 SCREEN_HEIGHT = game_config.window.size["height"]
@@ -84,12 +85,12 @@ class MainMenu(Scene):
             [
                 {
                     "text": "Start Game",
-                    "onclick": lambda: game_state_manager.set_state("level"),
+                    "onclick": lambda: game_state_manager.set_state(SceneKey.LEVEL.value),
                 },
                 {
                     "text": "Rebounder Experiment",
                     "onclick": lambda: game_state_manager.set_state(
-                        "rebounder_experiment"  # TODO: these should be passed in somehow rather than hard-coded
+                        SceneKey.REBOUNDER_EXPERIMENT.value
                     ),
                 },
                 {"text": "Quit", "onclick": self.handle_quit},
@@ -97,7 +98,7 @@ class MainMenu(Scene):
         )
 
     def handle_quit(self):
-        self.game_state_manager.append_task("main_menu", "quit")
+        self.game_state_manager.append_task(SceneKey.MAIN_MENU.value, "quit")
 
     def reset(self):
         print("class MainMenu: 'reset'")

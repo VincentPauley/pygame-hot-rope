@@ -1,6 +1,8 @@
 import pygame
+from pydantic import BaseModel
 
 from config import game_config
+from scene_keys import SceneKey
 from scenes.level import Level
 from scenes.main_menu import MainMenu
 from scenes.rebound_experiment import RebounderExperiment
@@ -12,25 +14,41 @@ FONT_NAME = "Arial"
 
 font = pygame.font.SysFont(FONT_NAME, 30)
 
+
+class SceneConfig(BaseModel):
+    key: SceneKey
+    scene_class: type
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
+class GameParams(BaseModel):
+    scenes: list[SceneConfig]
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
 # want to figure out how to pass single function calls to scenes
 # that only run one time like a close out or reset.
 class Game:
     running = False
 
-    def __init__(self, scenes):
+    def __init__(self, config: GameParams):
         pygame.init()
         pygame.display.set_caption(game_config.window.caption)
         pygame.event.clear()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
 
-        self.game_state_manager = GameStateManager("main_menu")
+        self.game_state_manager = GameStateManager(SceneKey.MAIN_MENU)
 
         # Initialize scene dictionary before registering scenes
         self.scene_dictionary = {}
 
-        for scene in scenes:
-            self._register_scene(scene["key"], scene["class"])
+        for scene in config.scenes:
+            self._register_scene(scene.key, scene.scene_class)
 
         self.running = True
 
@@ -38,7 +56,7 @@ class Game:
         pygame.quit()
 
     def _register_scene(self, scene_name, custom_class):
-        self.scene_dictionary[scene_name] = custom_class(self.screen, self.game_state_manager)
+        self.scene_dictionary[scene_name.value] = custom_class(self.screen, self.game_state_manager)
 
     def run(self):
         while self.running:
@@ -50,9 +68,9 @@ class Game:
                 elif event.type == pygame.KEYDOWN:
                     if (
                         event.key == pygame.K_SPACE
-                        and self.game_state_manager.get_state() == "level"
+                        and self.game_state_manager.get_state() == SceneKey.LEVEL.value
                     ):
-                        self.scene_dictionary["level"].receive_player_input("space")
+                        self.scene_dictionary[SceneKey.LEVEL.value].receive_player_input("space")
             
             current_scene = self.game_state_manager.get_state()
 
@@ -102,9 +120,11 @@ class GameStateManager:
 
 
 if __name__ == "__main__":
-    game = Game([
-        {"key": "main_menu", "class": MainMenu},
-        {"key": "rebounder_experiment", "class": RebounderExperiment},
-        {"key": "level", "class": Level},
-    ])
+    game = Game(GameParams(
+        scenes=[
+            SceneConfig(key=SceneKey.MAIN_MENU, scene_class=MainMenu),
+            SceneConfig(key=SceneKey.REBOUNDER_EXPERIMENT, scene_class=RebounderExperiment),
+            SceneConfig(key=SceneKey.LEVEL, scene_class=Level),
+        ]
+    ))
     game.run()

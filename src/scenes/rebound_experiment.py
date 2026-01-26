@@ -7,6 +7,7 @@ from classes.button import Button
 from classes.moveable_rectangle import MoveableRectangle, MoveableRectangleParams
 from colors import COLOR_PRIMARY_BLUE, COLOR_PRIMARY_YELLOW
 from config import game_config
+from scene_keys import SceneKey
 
 FONT_NAME = "Arial"
 
@@ -58,7 +59,7 @@ class RebounderExperiment:
         self.game_state_manager = game_state_manager
         self.main_menu_button = Button(
             "Main Menu",
-            lambda: game_state_manager.set_state("main_menu"),
+            lambda: game_state_manager.set_state(SceneKey.MAIN_MENU.value),
             COLOR_PRIMARY_BLUE,
             (10, 10),
             (150, 50),
