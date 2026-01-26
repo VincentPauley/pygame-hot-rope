@@ -125,6 +125,9 @@ class Level:
                 # add outer ball to group for checking collision with player and rope pass
                 self.fireball_outer.add(fireball_instance)
 
+        # Initialize player
+        self.player = Player(PlayerParams(starting_rect=self.starting_pos.rect))
+
     def handle_main_menu_click(self):
         self.game_state_manager.set_state("main_menu")
 
@@ -146,6 +149,7 @@ class Level:
         self.game_state_manager.clear_task_queue()
 
     def receive_player_input(self, input_type: str):
+        print("receive_player_input() called!")
         if input_type == "space":
             self.rope_active = True
             self.player.receive_jump_input()

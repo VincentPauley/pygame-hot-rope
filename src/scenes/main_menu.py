@@ -3,6 +3,7 @@ import pygame
 from assets import AssetManager
 from classes.button import Button
 from classes.easement import Easement
+from classes.scene import Scene, SceneConfig
 from colors import COLOR_PRIMARY_YELLOW
 from config import game_config
 
@@ -52,14 +53,18 @@ def define_button_group(
     return group_entities
 
 
-class MainMenu:
+class MainMenu(Scene):
     active_ticks = 0
     starting_ticks = 0
 
+    # properties inherited from Scene class
+    screen: pygame.Surface
+    asset_manager: AssetManager 
+
     def __init__(self, display_screen, game_state_manager):
-        self.screen = display_screen
+        super().__init__(SceneConfig(screen=display_screen))
+
         self.game_state_manager = game_state_manager
-        self.asset_manager = AssetManager()
 
         self.title_image = self.asset_manager.get_image("main_title")
 
@@ -98,6 +103,7 @@ class MainMenu:
 
     def task_handler(self, task_key):
         if task_key == "reset":
+            print("task handler was called")
             self.reset()
 
         self.game_state_manager.clear_task_queue()

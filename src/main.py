@@ -35,20 +35,17 @@ class Game:
 
         self.game_state_manager = GameStateManager("main_menu")
 
-        # each scene already has access to the game state manager class
-        self.main_menu = MainMenu(self.screen, self.game_state_manager)
-        self.rebounder_experiment = RebounderExperiment(
-            self.screen, self.game_state_manager
-        )
-        self.level = Level(self.screen, self.game_state_manager)
+        # Initialize scene dictionary before registering scenes
+        self.scene_dictionary = {}
 
-        # this dictionary stores every scene by it's key name
-        self.state_map = {
-            "main_menu": self.main_menu,
-            "rebounder_experiment": self.rebounder_experiment,
-            "level": self.level,
-        }
+        self._register_scene("main_menu", MainMenu)
+        self._register_scene("rebounder_experiment", RebounderExperiment)
+        self._register_scene("level", Level)
+
         self.running = True
+
+    def _register_scene(self, scene_name, custom_class):
+        self.scene_dictionary[scene_name] = custom_class(self.screen, self.game_state_manager)
 
     def run(self):
         while self.running:
@@ -62,12 +59,8 @@ class Game:
                         event.key == pygame.K_SPACE
                         and self.game_state_manager.get_state() == "level"
                     ):
-                        # TODO: potential restriction down to scene level
-                        self.level.receive_player_input("space")
-                # don't want to iterate events more than once, instead pass spacebara click to level from here
-
-            # this checks if the game_state_manager has any scene tasks first before running the scene
-
+                        self.scene_dictionary["level"].receive_player_input("space")
+            
             current_scene = self.game_state_manager.get_state()
 
             current_scene_task = next(
@@ -83,9 +76,9 @@ class Game:
 
             if current_scene_task:
                 # TODO: potential here for callback that removes task from queue after completion
-                self.state_map[current_scene].task_handler(current_scene_task["task"])
+                self.scene_dictionary[current_scene].task_handler(current_scene_task["task"])
 
-            self.state_map[current_scene].run(delta_time)
+            self.scene_dictionary[current_scene].run(delta_time)
 
             pygame.display.flip()
 
