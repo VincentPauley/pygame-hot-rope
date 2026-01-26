@@ -88,9 +88,9 @@ class MainMenu(Scene):
                     "onclick": lambda: game_state_manager.set_state(SceneKey.LEVEL.value),
                 },
                 {
-                    "text": "Rebounder Experiment",
+                    "text": "Fireball Rebounder",
                     "onclick": lambda: game_state_manager.set_state(
-                        SceneKey.REBOUNDER_EXPERIMENT.value
+                        SceneKey.FIREBALL_REBOUNDER.value
                     ),
                 },
                 {"text": "Quit", "onclick": self.handle_quit},

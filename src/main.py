@@ -5,6 +5,7 @@ from config import game_config
 from scene_keys import SceneKey
 from scenes.level import Level
 from scenes.main_menu import MainMenu
+from scenes.fireball_rebounder import FireballRebounder
 from scenes.rebound_experiment import RebounderExperiment
 
 SCREEN_WIDTH = game_config.window.size["width"]
@@ -42,6 +43,7 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
 
+        # set initial scene
         self.game_state_manager = GameStateManager(SceneKey.MAIN_MENU)
 
         # Initialize scene dictionary before registering scenes
@@ -74,6 +76,7 @@ class Game:
             
             current_scene = self.game_state_manager.get_state()
 
+            # find current scene's 1st task if any
             current_scene_task = next(
                 (
                     t
@@ -82,8 +85,6 @@ class Game:
                 ),
                 None,
             )
-            # might want to just distribute all tasks here because what if there's closeout tasks for
-            # other scenes etc?
 
             if current_scene_task:
                 print(f"processing scene: {current_scene} task: {current_scene_task['task']}")
@@ -93,6 +94,7 @@ class Game:
                 # TODO: potential here for callback that removes task from queue after completion
                 self.scene_dictionary[current_scene].task_handler(current_scene_task["task"])
 
+            # call active scene's run method at the end of every loop
             self.scene_dictionary[current_scene].run(delta_time)
 
             pygame.display.flip()
@@ -125,6 +127,7 @@ if __name__ == "__main__":
             SceneConfig(key=SceneKey.MAIN_MENU, scene_class=MainMenu),
             SceneConfig(key=SceneKey.REBOUNDER_EXPERIMENT, scene_class=RebounderExperiment),
             SceneConfig(key=SceneKey.LEVEL, scene_class=Level),
+            SceneConfig(key=SceneKey.FIREBALL_REBOUNDER, scene_class=FireballRebounder)
         ]
     ))
     game.run()

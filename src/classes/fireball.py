@@ -35,6 +35,9 @@ class Fireball(pygame.sprite.Sprite):
         # TODO: move back to under rect soon
         self.rect = self.image.get_rect(center=(self.dist_from_center, 100))
 
+        print("fireball rect:")
+        print(self.rect)
+
         self.center_point = fireballParams.center_point
         self.outer_ball_center = fireballParams.outer_ball_center
 
