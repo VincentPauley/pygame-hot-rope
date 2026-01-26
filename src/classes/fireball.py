@@ -23,7 +23,7 @@ class FireballUpdateParams(pydantic.BaseModel):
     delta: float
     angles: FireballPosParams
 
-
+# Note: this class is specifically designed for rotating around, not generic mvmt
 class Fireball(pygame.sprite.Sprite):
     def __init__(self, fireballParams: FireballParams):
         super().__init__(fireballParams.group)

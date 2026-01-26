@@ -116,6 +116,7 @@ class MainMenu(Scene):
     def run(self, delta_time):
         self.active_ticks = pygame.time.get_ticks() - self.starting_ticks
         self.screen.fill("dodgerblue")
+
         for button in self.main_menu_buttons:
             button.check_for_click()
             button.draw(self.screen)
